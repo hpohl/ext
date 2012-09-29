@@ -137,8 +137,8 @@ struct Matrix(size_t r, size_t c, T) {
     }
 	
 	/// Returns the pointer to the raw data.
-	T* ptr() nothrow pure {
-		return cast(T*)_data.ptr;
+	inout(T)* ptr() inout nothrow pure {
+		return cast(inout(T)*)_data.ptr;
 	}
 
     ///////////////////////////////////////////////////////////

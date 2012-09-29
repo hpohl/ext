@@ -197,7 +197,7 @@ class Image : Resource {
 	}
 	
 	override {
-		void loadFromRaw(in void[] data) {
+		void loadFromRaw(const(void)[] data) {
 			bind();
 			ilLoadL(IL_PNG, data.ptr, cast(uint)data.length);
 			updateFormat();

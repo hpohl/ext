@@ -74,7 +74,7 @@ class Resource {
 	
 	abstract {
 		/// Loads the resource from a chunk of data.
-		void loadFromRaw(in void[] data);
+		void loadFromRaw(const(void)[] data);
 		
 		/// Saves the resource.
 		void[] saveToRaw() const;

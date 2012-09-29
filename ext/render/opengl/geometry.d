@@ -1,8 +1,13 @@
 module ext.render.opengl.geometry;
 
+import ext.math.matrix;
 import ext.render.geometry;
 import ext.render.opengl.api;
 import ext.render.opengl.context;
+import ext.render.opengl.exception;
+import ext.render.opengl.program;
+import ext.render.program;
+import ext.render.target;
 
 
 /**
@@ -33,6 +38,10 @@ class Geometry : ext.render.geometry.Geometry {
 		}
 		
 		override {
+			ulong numTriangles() const {
+				return _numTriangles;
+			}
+			
 			Triangle[] data() const {
 				bind();
 				
@@ -54,6 +63,8 @@ class Geometry : ext.render.geometry.Geometry {
 			void data(in Triangle[] data) {
 				bind();
 				
+				_numTriangles = data.length;
+				
 				context.cglBufferData(GL_ARRAY_BUFFER,
 					data.length * Triangle.sizeof, data.ptr,
 					GL_STATIC_DRAW);
@@ -61,8 +72,29 @@ class Geometry : ext.render.geometry.Geometry {
 		}
 	}
 	
+	override {
+		void draw(Target target, const ext.render.program.Program prog,
+			in Matrix4x4f modelview, in Matrix4x4f projection) {
+			
+			auto oglprog = cast(ext.render.opengl.program.Program)prog;
+			
+			if (!oglprog) {
+				throw new OpenGLException("Cannot draw geometry: Program is not
+					an OpenGL program.");
+			}
+			
+			oglprog.use();
+			oglprog.uniformModelViewMatrix(modelview);
+			oglprog.uniformProjectionMatrix(projection);
+			
+			bind();
+			context.cglDrawArrays(GL_TRIANGLES, 0, cast(GLsizei)_numTriangles);
+		}
+	}
+	
 	private {
 		GLuint _vbo;
+		ulong _numTriangles;
 		
 		/// Bind the buffer to GL_ARRAY_BUFFER.
 		void bind() const {

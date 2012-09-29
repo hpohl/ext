@@ -5,6 +5,7 @@ import std.stdio;
 import ext.gui.layout;
 import ext.gui.picture;
 import ext.resource.image;
+import ext.resource.material;
 import ext.resource.path;
 import ext.resource.pool;
 import ext.resource.resource;
@@ -13,9 +14,17 @@ import ext.window.freeglut.window;
 
 void createResources() {
 	auto pool = new Pool("packages");
+	
 	auto img = new Image(Path("fun:tux"));
 	img.loadFromFile("images/tux.png");
 	pool.save(img);
+	
+	auto mat = new Material(Path("material:general"));
+	mat.ambient = Color(0.0, 0.0, 0.0, 1.0);
+	mat.diffuse = Color(1.0, 0.0, 0.0, 1.0);
+	mat.specular = Color(0.0, 0.0, 0.0, 1.0);
+	pool.save(mat);
+	
 	pool.write();
 }
 

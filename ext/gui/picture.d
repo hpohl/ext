@@ -16,6 +16,7 @@ class Picture : Widget {
 	this(Texture tex) {
 		_texture = tex;
 		_geometry = _texture.context.createGeometry();
+		_geometry.setToQuad(1.0, true);
 	}
 	
 	@property nothrow pure {

@@ -2,8 +2,10 @@ module ext.render.context;
 
 import ext.math.vector;
 import ext.render.geometry;
+import ext.render.program;
 import ext.render.target;
 import ext.render.texture;
+import ext.resource.material;
 
 
 /**
@@ -30,11 +32,14 @@ class ContextCreated {
 interface Context {
 	
 	/// Creates a texture using this context.
-	abstract Texture createTexture(Format format);
+	Texture createTexture(Format format);
 	
 	/// Creates a render target.
-	abstract Target createTarget(in Vector2ui size);
+	Target createTarget(in Vector2ui size);
 	
 	/// Creates a geometry.
-	abstract Geometry createGeometry();
+	Geometry createGeometry();
+	
+	/// Creates a program.
+	Program createProgram(const Material mat); 
 }

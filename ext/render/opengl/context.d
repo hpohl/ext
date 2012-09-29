@@ -9,10 +9,12 @@ import ext.render.context;
 import ext.render.opengl.api;
 import ext.render.opengl.exception;
 import ext.render.opengl.geometry;
+import ext.render.opengl.program;
 import ext.render.opengl.target;
 import ext.render.opengl.texture;
 import ext.render.target;
 import ext.render.texture;
+import ext.resource.material;
 
 
 /**
@@ -60,6 +62,9 @@ class Context : ext.render.context.Context {
 		
 		// Load OpenGL functions.
 		mixin(generateFuncLoader);
+		
+		// Enables.
+		this.cglEnable(GL_DEPTH_TEST);
 	}
 	
 	/// Used to call OpenGL functions.
@@ -94,6 +99,10 @@ class Context : ext.render.context.Context {
 		
 		ext.render.opengl.geometry.Geometry createGeometry() {
 			return new ext.render.opengl.geometry.Geometry(this);
+		}
+		
+		ext.render.opengl.program.Program createProgram(const Material mat) {
+			return new ext.render.opengl.program.Program(this, mat);
 		}
 	}
 	

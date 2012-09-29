@@ -20,7 +20,7 @@ void createResources() {
 }
 
 void main() {
-	// createResources();
+	createResources();
 	
 	auto pool = new Pool("packages");
 	auto img = pool.load!Image(Path("fun:tux"));
@@ -31,6 +31,7 @@ void main() {
 	
 	auto layout = new Layout(win.inputDevice);
 	auto pic = new Picture(img.getTexture(win.target.context));
+	layout.add(pic);
 	
 	while (true) {
 		layout.draw(win.target);

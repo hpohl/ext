@@ -55,6 +55,6 @@ void throwOnGLError(const Context ctx, string msg = "",
 					string file = __FILE__, size_t line = __LINE__, Throwable next = null) {
 	auto err = ctx.glGetError();
 	if (err != GL_NO_ERROR) {
-		throw new OpenGLErrorException(err, msg, file, line, next);
+		throw new OpenGLErrorException(err, msg ~ ", " ~ errorToString(err), file, line, next);
 	}
 }

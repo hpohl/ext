@@ -30,7 +30,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Unittest|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\Unittest</OutputPath>
-    <ExtraCompilerArguments>-unittest </ExtraCompilerArguments>
+    <ExtraCompilerArguments>-unittest -Dddoc</ExtraCompilerArguments>
     <ObjectsDirectory>obj/Unittest</ObjectsDirectory>
     <Target>Executable</Target>
     <OutputName>ext</OutputName>
@@ -122,5 +122,6 @@
     <Compile Include="ext\resource\external\devil.d" />
     <Compile Include="ext\resource\pool.d" />
     <Compile Include="ext\resource\path.d" />
+    <Compile Include="ext\gui\exception.d" />
   </ItemGroup>
 </Project>

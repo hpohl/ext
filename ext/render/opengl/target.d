@@ -8,6 +8,7 @@ import ext.render.opengl.context;
 import ext.render.opengl.exception;
 import ext.render.opengl.texture;
 import ext.render.target;
+import ext.render.texture;
 
 
 /**
@@ -30,7 +31,7 @@ class Target : ext.render.target.Target {
 		bind();
 		
 		// Create OpenGL texture as colour attachment.
-		_colorAttachment = new Texture(GL_RGBA8, context);
+		_colorAttachment = new ext.render.opengl.texture.Texture(Format.RGBA, context);
 		_colorAttachment.size = size;
 
 		// Bind colour attachment.
@@ -69,11 +70,11 @@ class Target : ext.render.target.Target {
 			return _fbo;
 		}
 		
-		Texture colorAttachment() {
+		ext.render.opengl.texture.Texture colorAttachment() {
 			return _colorAttachment;
 		}
 		
-		GLuint rbo() {
+		GLuint rbo() nothrow pure {
 			return _rbo;
 		}
 	}
@@ -93,7 +94,7 @@ class Target : ext.render.target.Target {
 				assert(false, "Not yet implemented.");
 			}
 			
-			inout(Texture) texture() inout {
+			inout(ext.render.opengl.texture.Texture) texture() inout {
 				return _colorAttachment;
 			}
 		}
@@ -102,7 +103,7 @@ class Target : ext.render.target.Target {
 	
 	private {
 		GLuint _fbo;
-		Texture _colorAttachment;
+		ext.render.opengl.texture.Texture _colorAttachment;
 		GLuint _rbo;
 		Vector2ui _size;
 		

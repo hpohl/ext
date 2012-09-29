@@ -1,5 +1,8 @@
 module ext.gui.layout;
 
+import std.algorithm;
+
+import ext.gui.exception;
 import ext.gui.widget;
 import ext.render.target;
 import ext.window.inputdevice;
@@ -26,10 +29,30 @@ class Layout {
 		}
 	}
 	
-	@property nothrow pure {
-		/// Returns all widgets of this layout.
-		inout(Widget[]) widgets() inout {
-			return _widgets;
+	@property {
+		/// Add a widget to this layout.
+		void add(Widget w) {
+			if (find(_widgets, w).length) {
+				return;
+			}
+			_widgets ~= w;
+		}
+		
+		/// Remove a widget.
+		void remove(Widget widget) {
+			auto idx = countUntil(_widgets, widget);
+			if (idx != -1) {
+				std.algorithm.remove(_widgets, idx);
+			} else {
+				throw new GUIException("Widget cannot be removed: It does not exist.");
+			}
+		}
+		
+		nothrow pure {
+			/// Returns all widgets of this layout.
+			inout(Widget[]) widgets() inout {
+				return _widgets;
+			}
 		}
 	}
 	

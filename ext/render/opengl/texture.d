@@ -1,5 +1,7 @@
 module ext.render.opengl.texture;
 
+import std.stdio;
+
 import ext.math.vector;
 import ext.render.opengl.api;
 import ext.render.opengl.context;
@@ -15,13 +17,26 @@ class Texture : ext.render.texture.Texture {
 	// Is an OpenGL object.
 	mixin OpenGLObject;
 	
+	static {
+		/// Converts a texture format to OpenGL.
+		GLenum toGLFormat(Format format) pure {
+			switch (format) {
+				case Format.RGB: return GL_RGB;
+				case Format.RGBA: return GL_RGBA;
+				default: throw new OpenGLException("Not supported texture format.");
+			}
+		}
+	}
+	
 	/// Creates by the given context and an OpenGL format.
 	this(GLenum format, Context context) {
 		super(Format.internal, context);
 		_format = format;
 		
 		// Creates the OpenGL texture object.
-		context.cglGenTextures(1, &_name);
+		GLuint tmpname;
+		context.cglGenTextures(1, &tmpname);
+		_name = tmpname;
 		scope(failure) context.cglDeleteTextures(1, &_name);
 	}
 	
@@ -33,7 +48,9 @@ class Texture : ext.render.texture.Texture {
 		_format = toGLFormat(format);
 		
 		// Creates the OpenGL texture object.
-		context.cglGenTextures(1, &_name);
+		GLuint tmpname;
+		context.cglGenTextures(1, &tmpname);
+		_name = tmpname;
 		scope(failure) context.cglDeleteTextures(1, &_name);
 	}
 	
@@ -43,6 +60,7 @@ class Texture : ext.render.texture.Texture {
 	}
 	
 	@property {
+		// Return the OpenGL name of the texture.
 		GLuint name() {
 			return _name;
 		}
@@ -58,8 +76,30 @@ class Texture : ext.render.texture.Texture {
 			
 			void size(in Vector2ui size) {
 				bind();
-				context.cglTexStorage2D(GL_TEXTURE_2D, 1,
-					_format, size.x, size.y);
+				context.cglTexImage2D(GL_TEXTURE_2D, 0, _format,
+					size.x, size.y, 0, _format, GL_UNSIGNED_BYTE,
+					null);
+			}
+			
+			inout(ubyte)[] data() inout {
+				bind();
+				
+				// Allocate memory to return.
+				inout(ubyte)[] ret;
+				auto size = size;
+				ret.length = size.x * size.y * numChannels();
+				
+				// Get the texture data.
+				context.cglGetTexImage(GL_TEXTURE_2D, 0, _format,
+					 GL_UNSIGNED_BYTE, cast(void*)ret.ptr);
+				
+				return ret;
+			}
+			
+			void data(const(ubyte)[] data) {
+				bind();
+				context.cglTexImage2D(GL_TEXTURE_2D, 0, _format, size.x,
+					size.y, 0, _format, GL_UNSIGNED_BYTE, cast(const void*)data.ptr);
 			}
 		}
 	}
@@ -70,15 +110,16 @@ class Texture : ext.render.texture.Texture {
 	}
 	
 	private {
-		GLuint _name;
-		GLenum _format;
+		const GLuint _name;
+		const GLenum _format;
 		
-		static GLenum toGLFormat(Format format) {
+		/// Returns the number of channels.
+		uint numChannels() const pure {
 			switch (format) {
-				case Format.R: return GL_RED;
-				case Format.RGB: return GL_RGB;
-				case Format.RGBA: return GL_RGBA;
-				default: throw new OpenGLException("Not supported texture format.");
+				case Format.RGB: return 3;
+				case Format.RGBA: return 4;
+				default: throw new OpenGLException("Cannot determine channel 
+							count from texture format.");
 			}
 		}
 	}

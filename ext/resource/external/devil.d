@@ -10,7 +10,7 @@ alias byte ILbyte;
 alias short ILshort;
 alias int ILint;
 alias size_t ILsizei;
-alias byte ILubyte;
+alias ubyte ILubyte;
 alias ushort ILushort;
 alias uint ILuint;
 alias float ILfloat;
@@ -20,7 +20,7 @@ alias double ILclampd;
 alias long ILint64;
 alias ulong ILuint64;
 
-// ilGetInteger
+// ilGetInteger.
 enum IL_VERSION_NUM = 0x0DE2;
 enum IL_IMAGE_WIDTH = 0x0DE4;
 enum IL_IMAGE_HEIGHT = 0x0DE5;
@@ -54,21 +54,44 @@ enum IL_IMAGE_CUBEFLAGS = 0x0DFD;
 enum IL_IMAGE_ORIGIN = 0x0DFE;
 enum IL_IMAGE_CHANNELS = 0x0DFF;
 
-// Image formats
+// Image data formats.
+enum IL_COLOR_INDEX = 0x1900;
+enum IL_ALPHA = 0x1906;
+enum IL_RGB = 0x1907;
+enum IL_RGBA = 0x1908;
+enum IL_BGR = 0x80E0;
+enum IL_BGRA = 0x80E1;
+enum IL_LUMINANCE = 0x1909;
+enum IL_LUMINANCE_ALPHA = 0x190A;
+
+// Image data types.
+enum IL_BYTE = 0x1400;
+enum IL_UNSIGNED_BYTE = 0x1401;
+enum IL_SHORT = 0x1402;
+enum IL_UNSIGNED_SHORT = 0x1403;
+enum IL_INT = 0x1404;
+enum IL_UNSIGNED_INT = 0x1405;
+enum IL_FLOAT = 0x1406;
+enum IL_DOUBLE = 0x140A;
+enum IL_HALF = 0x140B;
+
+// Image file formats.
 enum IL_BMP = 0x0420;
 enum IL_PNG = 0x042A;
 
 enum IL_NO_ERROR = 0x0000;
 
-// Needed functions
+// Needed functions.
 void ilBindImage(ILuint Image);
 void ilDeleteImage(const ILuint Num);
 ILuint ilGenImage();
+ILubyte* ilGetData();
 ILenum ilGetError();
 ILint ilGetInteger(ILenum Mode);
 void ilInit();
 ILboolean ilLoadL(ILenum Type, const void* Lump, ILuint Size);
 ILuint ilSaveL(ILenum Type, void* Lump, ILuint Size);
+ILboolean ilTexImage(ILuint Width, ILuint Height, ILuint Depth, ILubyte NumChannels, ILenum Format, ILenum Type, void* Data);
 
 const(char)* iluErrorString(ILenum Error);
 void iluInit();

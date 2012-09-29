@@ -11,10 +11,10 @@ struct Triangle {
 	/// First point.
 	Vector3f a;
 	
-	// Second point.
+	/// Second point.
 	Vector3f b;
 		
-	// Third point.
+	/// Third point.
 	Vector3f c;
 	
 	/// Range of texture coordinates.

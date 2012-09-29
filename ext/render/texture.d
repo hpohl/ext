@@ -6,7 +6,6 @@ import ext.render.context;
 
 /// Data format of textures.
 enum Format {
-	R,
     RGB,
 	RGBA,
 	internal
@@ -34,6 +33,12 @@ class Texture : ContextCreated {
 		
 		/// Resizes the texture.
 		abstract void size(in Vector2ui size);
+		
+		/// Returns the image data.
+		abstract inout(ubyte)[] data() inout;
+		
+		/// Sets the image data.
+		abstract void data(const(ubyte)[] data);
 	}
 	
 	private {

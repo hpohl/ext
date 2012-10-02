@@ -14,6 +14,9 @@ class Window {
 	
 	/// The default window title. Implementations have to default to it.
 	enum defaultTitle = "ext window";
+    
+    /// The default window size.
+    enum defaultSize = Vector2ui(800, 600);
 	
 	// Abstracts...
 	abstract {

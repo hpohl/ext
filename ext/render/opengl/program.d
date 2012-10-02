@@ -3,6 +3,7 @@ module ext.render.opengl.program;
 import ext.math.matrix;
 import ext.render.opengl.api;
 import ext.render.opengl.context;
+import ext.render.opengl.exception;
 import ext.render.program;
 import ext.resource.material;
 
@@ -12,6 +13,9 @@ import ext.resource.material;
  */
 class Program : ext.render.program.Program {
     mixin OpenGLObject;
+    
+    enum vertexLocation = 0;
+    enum texLocations = [1, 2, 3, 4, 5, 6, 7, 8];
     
     /// Specifies the OpenGL context to use.
     this(Context con, const Material mat) {
@@ -88,7 +92,7 @@ class Program : ext.render.program.Program {
                 
                 
                 void main() {
-                    gl_Position = proj * mdlview * position;
+                    gl_Position = proj * position;
                     exTexCoord = texCoord; 
                 }
                 ";
@@ -109,7 +113,8 @@ class Program : ext.render.program.Program {
                 
                 
                 void main() {
-                    color = texture(tex, exTexCoord);
+                    //color = vec4(1.0, 0.0, 0.0, 1.0);
+                    //color = texture(tex, exTexCoord);
                 }
                 ";
             
@@ -122,6 +127,15 @@ class Program : ext.render.program.Program {
             context.cglAttachShader(_prog, _fs);
             
             context.cglLinkProgram(_prog);
+            
+            context.cglValidateProgram(_prog);
+            
+            GLint stat;
+            context.cglGetProgramiv(_prog, GL_VALIDATE_STATUS, &stat);
+            
+            if (stat != GL_TRUE) {
+                throw new OpenGLException("Material generated program is not valid.");
+            }
         }
     }
     

@@ -1,44 +1,64 @@
 module ext.gui.picture;
 
 import ext.gui.widget;
+import ext.math.matrix;
 import ext.render.context;
 import ext.render.geometry;
 import ext.render.target;
 import ext.render.texture;
+import ext.resource.image;
+import ext.resource.material;
+import ext.resource.path;
 
 
 /**
- * A picture draws a texture at the given position
+ * A picture draws an image at the given position
  * and size.
  */
 class Picture : Widget {
-	/// Tex will be displayed.
-	this(Texture tex) {
-		_texture = tex;
-		_geometry = _texture.context.createGeometry();
-		_geometry.setToQuad(1.0, true);
+	/// Img will be displayed.
+	this(Image img) {
+		_img = img;
+		
+		_mat = new Material(Path("ext.gui.picture:mat"));
+		_mat.appendTexture(_img);
 	}
 	
 	@property nothrow pure {
-		/// Returns the associated texture.
-		inout(Texture) texture() inout {
-			return _texture;
+		/// Returns the associated image.
+		inout(Image) image() inout {
+			return _img;
 		}
 		
-		/// Sets the texture to be drawn.
-		void texture(Texture texture) {
-			_texture = texture;
+		/// Sets the image to be drawn.
+		void image(Image img) {
+			_img = img;
 		}
 	}
 	
 	override {
 		void draw(Target target) {
+			if (target.context !in _geometries) {
+				auto geo = target.context.createGeometry();
+				geo.setToQuad(1.0, true);
+				_geometries[target.context] = geo;
+			}
 			
+			auto geo = _geometries[target.context];
+			
+			Matrix4x4f proj;
+			orthographic(proj, 0.0, 1.0, 0.0, 1.0, -1.0, 1.0);
+			
+			Matrix4x4f mdlview;
+			
+			geo.draw(target, _mat.getProgram(geo.context),
+				mdlview, proj);
 		}
 	}
 	
 	private {
-		Texture _texture;
-		Geometry _geometry;
+		Image _img;
+		Geometry[Context] _geometries;
+		Material _mat;
 	}
 }

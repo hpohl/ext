@@ -21,8 +21,8 @@ class Texture : ext.render.texture.Texture {
 		/// Converts a texture format to OpenGL.
 		GLenum toGLFormat(Format format) pure {
 			switch (format) {
-				case Format.RGB: return GL_RGB;
-				case Format.RGBA: return GL_RGBA;
+				case Format.RGB: return GL_RGB8;
+				case Format.RGBA: return GL_RGBA8;
 				default: throw new OpenGLException("Not supported texture format.");
 			}
 		}
@@ -38,6 +38,16 @@ class Texture : ext.render.texture.Texture {
 		context.cglGenTextures(1, &tmpname);
 		_name = tmpname;
 		scope(failure) context.cglDeleteTextures(1, &_name);
+        
+        bind();
+        context.cglTexParameteri(GL_TEXTURE_2D,
+            GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        context.cglTexParameteri(GL_TEXTURE_2D,
+            GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        context.cglTexParameteri(GL_TEXTURE_2D,
+            GL_TEXTURE_WRAP_S, GL_REPEAT);
+        context.cglTexParameteri(GL_TEXTURE_2D,
+            GL_TEXTURE_WRAP_T, GL_REPEAT);
 	}
 	
 	/// Creates by the given context and format.
@@ -76,9 +86,7 @@ class Texture : ext.render.texture.Texture {
 			
 			void size(in Vector2ui size) {
 				bind();
-				context.cglTexImage2D(GL_TEXTURE_2D, 0, _format,
-					size.x, size.y, 0, _format, GL_UNSIGNED_BYTE,
-					null);
+                context.cglTexStorage2D(GL_TEXTURE_2D, 1, _format, size.x, size.y);
 			}
 			
 			inout(ubyte)[] data() inout {

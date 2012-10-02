@@ -1,9 +1,14 @@
 module samples.current.main;
 
+import std.algorithm;
+import std.random;
 import std.stdio;
 
 import ext.gui.layout;
 import ext.gui.picture;
+import ext.render.opengl.api;
+import ext.render.opengl.context;
+import ext.render.opengl.exception;
 import ext.resource.image;
 import ext.resource.material;
 import ext.resource.path;
@@ -39,11 +44,19 @@ void main() {
 	auto win = new Window;
 	
 	auto layout = new Layout(win.inputDevice);
-	auto pic = new Picture(img.getTexture(win.target.context));
+	auto pic = new Picture(img);
 	layout.add(pic);
-	
+    
+    win.target.context.cglClearColor(0.1, 0.1, 0.11, 0.0);
+    win.target.clear();
+    
 	while (true) {
-		layout.draw(win.target);
+        import ext.window.freeglut.api;
+        //glutWireTeapot(1.0);
+        
+        
+        //win.target.clear();
+        layout.draw(win.target);
 		
 		win.update();
 	}

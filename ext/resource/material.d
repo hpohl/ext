@@ -2,6 +2,9 @@ module ext.resource.material;
 
 import std.stdio;
 
+import ext.render.context;
+import ext.render.program;
+import ext.resource.image;
 import ext.resource.path;
 import ext.resource.resource;
 
@@ -82,6 +85,21 @@ class Material : Resource {
         super(path);
     }
     
+    /// Always creates a new program out of this material.
+    Program genProgram(Context con) const {
+        return con.createProgram(this);
+    }
+    
+    /// Returns a new program if no one has been created for this context.
+    Program getProgram(Context con) {
+        if (con !in _programs) {
+            auto prog = genProgram(con);
+            _programs[con] = prog;
+            return prog;
+        }
+        return _programs[con];
+    }
+    
     @property nothrow pure {
         /// The ambient color.
         Color ambient() const {
@@ -112,6 +130,21 @@ class Material : Resource {
         void specular(in Color color) {
             _specular = color;
         }
+        
+        /// Returns the associated textures as images.
+        inout(Image)[] textures() inout {
+            return _textures;
+        }
+        
+        /// Sets the associated textures.
+        void textures(Image[] textures) {
+            _textures = textures;
+        }
+        
+        /// Appends a texture to the textures range.
+        void appendTexture(Image img) {
+            _textures ~= img;
+        }
     }
     
     override {
@@ -135,5 +168,9 @@ class Material : Resource {
         Color _ambient;
         Color _diffuse;
         Color _specular;
+        
+        Image[] _textures;
+        
+        Program[Context] _programs;
     }
 }

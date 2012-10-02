@@ -41,16 +41,13 @@ class Window : ext.window.window.Window {
 						 * window-created target (OpenGL name 0).
 						 */ 
 						c.cglBindFramebuffer(GL_FRAMEBUFFER, 0);
-						
-						c.cglClear(GL_COLOR_BUFFER_BIT);
-						
-						c.cglBindVertexArray(w._va);
+						c.cglClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 						
 						c.cglUseProgram(w._prog);
 						
+                        // Uniform framebuffer texture.
 						c.cglActiveTexture(GL_TEXTURE0);
 						c.cglBindTexture(GL_TEXTURE_2D, w._target.colorAttachment.name);
-						
 						auto loc = c.cglGetUniformLocation(w._prog, "tex".ptr);
 						c.cglUniform1i(loc, 0);
 						
@@ -58,7 +55,9 @@ class Window : ext.window.window.Window {
 						orthographic(proj, 0.0, 1.0, 0.0, 1.0, -1.0, 1.0);
 						loc = c.cglGetUniformLocation(w._prog, "proj".ptr);
 						c.cglUniformMatrix4fv(loc, 1, GL_TRUE, proj.ptr);
-						
+                        
+                        c.cglBindVertexArray(w._va);
+                        
 						c.cglBindBuffer(GL_ARRAY_BUFFER, w._vbo);
 						c.cglVertexAttribPointer(10, 4, GL_FLOAT, GL_FALSE, 0, null);
 						c.cglEnableVertexAttribArray(10);
@@ -104,11 +103,14 @@ class Window : ext.window.window.Window {
 	this() {
 		// Use OpenGL 3.3
 		glutInitContextVersion(3, 3);
-		glutInitContextProfile(GLUT_CORE_PROFILE);
-		glutInitContextFlags(GLUT_FORWARD_COMPATIBLE);
+		glutInitContextProfile(GLUT_COMPATIBILITY_PROFILE);
+		//glutInitContextFlags(GLUT_BAC);
 		
 		// Use double buffering.
 		glutInitDisplayMode(GLUT_DOUBLE);
+        
+        // Default size.
+        glutInitWindowSize(defaultSize.x, defaultSize.y);
 				
 		// Create GLUT window.
 		_id = glutCreateWindow(_title.ptr);
@@ -197,7 +199,9 @@ class Window : ext.window.window.Window {
 			uniform sampler2D tex;
 			
 			void main() {
+                //color = vec4(1.0, 0.0, 0.0, 1.0);
 				color = texture(tex, exTexCoord);
+                //color = vec4(exTexCoord, 0.0, 1.0);
 			}
 			";
 		
@@ -223,7 +227,7 @@ class Window : ext.window.window.Window {
 		
 		writeln(log);
 		
-		// Add us to all windows.
+		// Add us to all windows for FreeGLUT lookup.
 		_windows[_id] = this;
 	}
 	

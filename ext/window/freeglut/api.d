@@ -20,7 +20,7 @@ alias double GLdouble;
 alias double GLclampd;
 alias void GLvoid;
 
-nothrow package extern (C):
+nothrow extern (C):
 
 // -----------------------------------------
 // Standard GLUT

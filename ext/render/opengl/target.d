@@ -53,7 +53,9 @@ class Target : ext.render.target.Target {
 		// Check for completeness.
 		auto completeness = context.cglCheckFramebufferStatus(GL_FRAMEBUFFER);
 		
-		//writeln(completeness);
+        if (completeness != GL_FRAMEBUFFER_COMPLETE) {
+            throw new OpenGLException("Framebuffer not complete.");
+        }
 	}
 	
 	~this() {
@@ -63,6 +65,11 @@ class Target : ext.render.target.Target {
 			context.cglDeleteRenderbuffers(1, &_rbo);
 		}
 	}
+    
+    /// Binds the framebuffer.
+    void bind() {
+        context.cglBindFramebuffer(GL_FRAMEBUFFER, _fbo);
+    }
 	
 	// Properties...
 	@property {
@@ -106,10 +113,5 @@ class Target : ext.render.target.Target {
 		ext.render.opengl.texture.Texture _colorAttachment;
 		GLuint _rbo;
 		Vector2ui _size;
-		
-		/// Binds the framebuffer.
-		void bind() const {
-			context.cglBindFramebuffer(GL_FRAMEBUFFER, _fbo);
-		}
 	}
 }

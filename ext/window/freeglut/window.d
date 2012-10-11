@@ -40,33 +40,33 @@ class Window : ext.window.window.Window {
 						 * because it is not possible to create a render target from the
 						 * window-created target (OpenGL name 0).
 						 */ 
-						c.cglBindFramebuffer(GL_FRAMEBUFFER, 0);
-						c.cglClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+						c.glBindFramebuffer(GL_FRAMEBUFFER, 0);
+						c.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 						
-						c.cglUseProgram(w._prog);
+						c.glUseProgram(w._prog);
 						
                         // Uniform framebuffer texture.
-						c.cglActiveTexture(GL_TEXTURE0);
-						c.cglBindTexture(GL_TEXTURE_2D, w._target.colorAttachment.name);
-						auto loc = c.cglGetUniformLocation(w._prog, "tex".ptr);
-						c.cglUniform1i(loc, 0);
+						c.glActiveTexture(GL_TEXTURE0);
+						c.glBindTexture(GL_TEXTURE_2D, w._target.colorAttachment.name);
+						auto loc = c.glGetUniformLocation(w._prog, "tex".ptr);
+						c.glUniform1i(loc, 0);
 						
 						Matrix!(4, 4, GLfloat) proj;
 						orthographic(proj, 0.0, 1.0, 0.0, 1.0, -1.0, 1.0);
-						loc = c.cglGetUniformLocation(w._prog, "proj".ptr);
-						c.cglUniformMatrix4fv(loc, 1, GL_TRUE, proj.ptr);
+						loc = c.glGetUniformLocation(w._prog, "proj".ptr);
+						c.glUniformMatrix4fv(loc, 1, GL_TRUE, proj.ptr);
                         
-                        c.cglBindVertexArray(w._va);
+                        c.glBindVertexArray(w._va);
                         
-						c.cglBindBuffer(GL_ARRAY_BUFFER, w._vbo);
-						c.cglVertexAttribPointer(10, 4, GL_FLOAT, GL_FALSE, 0, null);
-						c.cglEnableVertexAttribArray(10);
+						c.glBindBuffer(GL_ARRAY_BUFFER, w._vbo);
+						c.glVertexAttribPointer(10, 4, GL_FLOAT, GL_FALSE, 0, null);
+						c.glEnableVertexAttribArray(10);
 						
-						c.cglBindBuffer(GL_ARRAY_BUFFER, w._tvbo);
-						c.cglVertexAttribPointer(11, 2, GL_FLOAT, GL_FALSE, 0, null);
-						c.cglEnableVertexAttribArray(11);
+						c.glBindBuffer(GL_ARRAY_BUFFER, w._tvbo);
+						c.glVertexAttribPointer(11, 2, GL_FLOAT, GL_FALSE, 0, null);
+						c.glEnableVertexAttribArray(11);
 						
-						c.cglDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+						c.glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 						
 						// Finally swap the front and back buffer and ask to render again.
 						glutSwapBuffers();
@@ -85,8 +85,44 @@ class Window : ext.window.window.Window {
 				}
 				
 				void mouse(int button, int state, int, int) {
-					current.inputDevice.injectMouse(button, state);
+                    try {
+					    current().inputDevice.injectMouse(button, state);
+                    } catch (Throwable t) {
+                        writeln("Unable to inject mouse press event: " ~ t.msg);
+                    }
 				}
+                
+                void motion(int x, int y) {
+                    try {
+                        current().inputDevice.injectMousePosition(x, y);
+                    } catch (Throwable t) {
+                        writeln("Unable to inject mouse position: " ~ t.msg);
+                    }
+                }
+                
+                void passiveMotion(int x, int y) {
+                    try {
+                        current().inputDevice.injectMousePosition(x, y);
+                    } catch (Throwable t) {
+                        writeln("Unable to inject mouse position: " ~ t.msg);
+                    }
+                }
+                
+                void keyboard(char key, int x, int y) {
+                    try {
+                        current().inputDevice.injectKeyPressed(key);
+                    } catch (Throwable t) {
+                        writeln("Unable to inject key press event: " ~ t.msg);
+                    }
+                }
+                
+                void keyboardUp(char key, int x, int y) {
+                    try {
+                        current().inputDevice.injectKeyReleased(key);
+                    } catch (Throwable t) {
+                        writeln("Unable to inject key release event: " ~ t.msg);
+                    }
+                }
 			}
 			
 			// Gets the current window.
@@ -121,22 +157,30 @@ class Window : ext.window.window.Window {
 		// Setup callback functions.
 		glutDisplayFunc(&display);
 		glutMouseFunc(&mouse);
+        glutMotionFunc(&motion);
+        glutPassiveMotionFunc(&passiveMotion);
+        glutKeyboardFunc(&keyboard);
+        glutKeyboardUpFunc(&keyboardUp);
+        
+        // Hide cursor.
+        glutSetCursor(GLUT_CURSOR_NONE);
 		
 		// Initialise OpenGL context.
 		_context = new Context("/usr/lib/libGL.so");
 		
 		// Create root target.
-		_target = _context.createTarget(size);
+        auto s = size();
+		_target = _context.createTarget(s);
 		
 		// Prepare for displaying the target on screen using a quad.
-		_context.cglGenVertexArrays(1, &_va);
-		scope(failure) _context.cglDeleteVertexArrays(1, &_va);
+		_context.glGenVertexArrays(1, &_va);
+		scope(failure) _context.glDeleteVertexArrays(1, &_va);
 		
-		_context.cglGenBuffers(1, &_vbo);
-		scope(failure) _context.cglDeleteBuffers(1, &_vbo);
+		_context.glGenBuffers(1, &_vbo);
+		scope(failure) _context.glDeleteBuffers(1, &_vbo);
 		
-		_context.cglGenBuffers(1, &_tvbo);
-		scope(failure) _context.cglDeleteBuffers(1, &_tvbo);
+		_context.glGenBuffers(1, &_tvbo);
+		scope(failure) _context.glDeleteBuffers(1, &_tvbo);
 		
 		GLfloat[] quad = [
 			1.0, 0.0, 0.0, 1.0,
@@ -145,8 +189,8 @@ class Window : ext.window.window.Window {
 			0.0, 0.0, 0.0, 1.0
 		];
 		
-		_context.cglBindBuffer(GL_ARRAY_BUFFER, _vbo);
-		_context.cglBufferData(GL_ARRAY_BUFFER, quad.length * GLfloat.sizeof,
+		_context.glBindBuffer(GL_ARRAY_BUFFER, _vbo);
+		_context.glBufferData(GL_ARRAY_BUFFER, quad.length * GLfloat.sizeof,
 			quad.ptr, GL_STATIC_DRAW);
 		
 		GLfloat[] texCoords = [
@@ -156,13 +200,13 @@ class Window : ext.window.window.Window {
 			0.0, 0.0
 		];
 		
-		_context.cglBindBuffer(GL_ARRAY_BUFFER, _tvbo);
-		_context.cglBufferData(GL_ARRAY_BUFFER, texCoords.length * GLfloat.sizeof,
+		_context.glBindBuffer(GL_ARRAY_BUFFER, _tvbo);
+		_context.glBufferData(GL_ARRAY_BUFFER, texCoords.length * GLfloat.sizeof,
 			texCoords.ptr, GL_STATIC_DRAW);
 		
 		// Prepare shaders.
-		_vert = _context.cglCreateShader(GL_VERTEX_SHADER);
-		scope(failure) _context.cglDeleteShader(_vert);
+		_vert = _context.glCreateShader(GL_VERTEX_SHADER);
+		scope(failure) _context.glDeleteShader(_vert);
 		
 		const char[] vertSource = "
 			#version 330
@@ -183,11 +227,11 @@ class Window : ext.window.window.Window {
 		
 		auto vptr = vertSource.ptr;
 		GLint vlen = vertSource.length;
-		_context.cglShaderSource(_vert, 1, &vptr, &vlen);
-		_context.cglCompileShader(_vert);
+		_context.glShaderSource(_vert, 1, &vptr, &vlen);
+		_context.glCompileShader(_vert);
 		
-		_frag = _context.cglCreateShader(GL_FRAGMENT_SHADER);
-		scope(failure) _context.cglDeleteShader(_frag);
+		_frag = _context.glCreateShader(GL_FRAGMENT_SHADER);
+		scope(failure) _context.glDeleteShader(_frag);
 		
 		const char[] fragSource = "
 			#version 330
@@ -207,23 +251,23 @@ class Window : ext.window.window.Window {
 		
 		auto fptr = fragSource.ptr;
 		GLint flen = fragSource.length;
-		_context.cglShaderSource(_frag, 1, &fptr, &flen);
-		_context.cglCompileShader(_frag);
+		_context.glShaderSource(_frag, 1, &fptr, &flen);
+		_context.glCompileShader(_frag);
 		
-		_prog = _context.cglCreateProgram();
-		scope(failure) _context.cglDeleteProgram(_prog);
+		_prog = _context.glCreateProgram();
+		scope(failure) _context.glDeleteProgram(_prog);
 		
-		_context.cglAttachShader(_prog, _vert);
-		_context.cglAttachShader(_prog, _frag);
-		_context.cglLinkProgram(_prog);
+		_context.glAttachShader(_prog, _vert);
+		_context.glAttachShader(_prog, _frag);
+		_context.glLinkProgram(_prog);
 		
 		GLint len;
-		_context.cglGetProgramiv(_prog, GL_INFO_LOG_LENGTH, &len);
+		_context.glGetProgramiv(_prog, GL_INFO_LOG_LENGTH, &len);
 		
 		char[] log;
 		log.length = len;
 		
-		_context.cglGetProgramInfoLog(_prog, len, null, log.ptr);
+		_context.glGetProgramInfoLog(_prog, len, null, log.ptr);
 		
 		writeln(log);
 		

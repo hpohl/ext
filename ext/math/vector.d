@@ -16,6 +16,17 @@ struct Vector(size_t n, T) {
     // Infos for outside
     enum dims = n;
     alias T ValueType;
+    
+    static {
+        /// Creates a ranges containing nulls.
+        private T[n] createNullRange() {
+            T[n] ret;
+            foreach (ref v; ret) {
+                ret = 0;
+            }
+            return ret;
+        }
+    }
 
     // Constructor definition
     this(Args...)(Args args) {
@@ -29,7 +40,9 @@ struct Vector(size_t n, T) {
                 static if (isVector!First) {
                     static assert(is(First.ValueType : T),
                                   "Vector value types are incompatible");
-                    this[argsPassed .. argsPassed + First.dims][] = to!(T[])(f[])[];
+                    foreach (i; 0 ..  First.dims) {
+                        this[argsPassed + i] = f[i];
+                    }
                     construct!(argsPassed + First.dims)(args[1 .. $]);
                 } else static if (!isVector!First) {
                     this[argsPassed] = f;
@@ -59,8 +72,42 @@ struct Vector(size_t n, T) {
 
     // -----------------------------------------------------...
     // Operators
+    /// Assignment operator.
+    ref Vector opAssign(ref const Vector vec) nothrow pure {
+        foreach(i; 0 .. n) {
+            _data[i] = vec._data[i];
+        }
+        return this;
+    }
+    
+    /// Binary operator for math operations.
+    Vector opBinary(string op)(in Vector rhs) {
+        Vector ret;
+        foreach (i; 0 .. n) {
+            mixin("ret[i] = this[i] " ~ op ~ " rhs[i];");
+        }
+        return ret;
+    }
+    
+    unittest {
+        auto v1 = Vector2f(1.0, 2.0);
+        auto v2 = Vector2f(1.0, 2.0);
+        
+        assert(v1 / v2 == Vector2f(1.0, 1.0));
+        assert(v1 + v2 == Vector2f(2.0, 4.0));
+    }
+    
+    /// ditto
+    Vector opBinary(string op)(T rhs) {
+        Vector ret;
+        foreach (i; 0 .. n) {
+            mixin("ret[i] = this[i] " ~ op ~ " rhs;");
+        }
+        return ret;
+    }
+    
     /// Cast operator overload allows casting vectors explicitly.
-    const nothrow pure auto opCast(Target)()
+    auto opCast(Target)() const nothrow pure
     if (isVector!Target && sameDims!(Vector, Target)) {
         Target ret;
 
@@ -127,8 +174,21 @@ struct Vector(size_t n, T) {
         assert(--v == Vector2i(0, 1));
         assert(v == Vector2i(0, 1));
     }
-
-    /// Unary operator overload for
+    
+    /// Unary operator overload for negation.
+    Vector opUnary(string op)()
+    if (op == "-") {
+        Vector ret;
+        foreach (i; 0 .. n) {
+            ret[i] = -_data[i];
+        }
+        return ret;
+    }
+    
+    unittest {
+        auto v = Vector2i(1.0, -1.0);
+        assert(-v == Vector2i(-1.0, 1.0));
+    }
 
     // ---------------------------------------------------------
     // Data access
@@ -147,9 +207,8 @@ struct Vector(size_t n, T) {
     mixin defineProperty!(2, "z");
     mixin defineProperty!(3, "w");
 
-
     // Implement storage
-    private T[n] _data;
+    private T[n] _data = createNullRange();
 }
 
 

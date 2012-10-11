@@ -20,20 +20,6 @@ struct Matrix(size_t r, size_t c, T) {
 
     // Constructor definition
     this(Args...)(Args args) {
-
-        static if (args.length == 0) {
-            foreach (row; 0 .. r) {
-                foreach (col; 0 .. c) {
-                    if (r == c) {
-                        this[r][c] = 1;
-                    } else {
-                        this[r][c] = 0;
-                    }
-                }
-            }
-            return;
-        }
-
         void construct(size_t argsPassed, Args...)(Args args) {
             
             static if (args.length > 0) {
@@ -100,7 +86,7 @@ struct Matrix(size_t r, size_t c, T) {
     }
 
     /// Cast operator overload allows casting matrices explicity.
-    const nothrow pure auto opCast(Target)()
+    auto opCast(Target)() const nothrow pure
     if (isMatrix!Target && sameDims!(Matrix, Target)) {
         Target ret;
 
@@ -112,7 +98,7 @@ struct Matrix(size_t r, size_t c, T) {
     }
 
     /// Index operator overload for direct access to the rows.
-    inout nothrow pure auto ref opIndex(size_t idx) {
+    auto ref opIndex(size_t idx) inout nothrow pure {
         return _data[idx];
     }
 
@@ -130,11 +116,23 @@ struct Matrix(size_t r, size_t c, T) {
     // Functions
 	
 	/// Translates the matrix given by the vector v.
-    nothrow pure void translate(ref const Vector!(r - 1, T) v) {
+    void translate(ref const Vector!(r - 1, T) v) nothrow pure {
         foreach (row; 0 .. r - 1) {
             this[row][c - 1] += v[row];
         }
     }
+    
+    static if (r == c) {
+        /// Scales the matrix.
+        void scale(ref const Vector!(r - 1, T) v) nothrow pure {
+            Matrix m;
+            identity(m);
+            foreach (row; 0 .. r - 1) {
+                m[row][row] = v[row];
+            }
+            this = m * this;
+        }
+    }   
 	
 	/// Returns the pointer to the raw data.
 	inout(T)* ptr() inout nothrow pure {
@@ -151,7 +149,8 @@ struct Matrix(size_t r, size_t c, T) {
 // Functions
 
 /// Sets the matrix to identity.
-void identity(size_t r, size_t c, T)(ref Matrix!(r, c, T) m) {
+void identity(size_t r, size_t c, T)(ref Matrix!(r, c, T) m)
+if (r == c) {
 	static assert(r == c, "Rows have to equal rows.");
 	
 	foreach (row; 0 .. r) {

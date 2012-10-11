@@ -26,13 +26,13 @@ struct TriangleTexCoords {
 */
 struct Triangle {
     /// First point.
-    Vector4f a;
+    Vector3f a;
 
     /// Second point.
-    Vector4f b;
+    Vector3f b;
 
     /// Third point.
-    Vector4f c;
+    Vector3f c;
 }
 
 /**
@@ -63,13 +63,13 @@ class Geometry : ContextCreated {
 		 * 
 		 */
 		
-		quad[0].a = Vector4f(+halfSize, -halfSize, 0.0, 1.0);
-		quad[0].b = Vector4f(-halfSize, +halfSize, 0.0, 1.0);
-		quad[0].c = Vector4f(-halfSize, -halfSize, 0.0, 1.0);
+		quad[0].a = Vector3f(+halfSize, -halfSize, 0.0);
+		quad[0].b = Vector3f(-halfSize, +halfSize, 0.0);
+		quad[0].c = Vector3f(-halfSize, -halfSize, 0.0);
 		
-		quad[1].a = Vector4f(+halfSize, -halfSize, 0.0, 1.0);
-		quad[1].b = Vector4f(+halfSize, +halfSize, 0.0, 1.0);
-		quad[1].c = Vector4f(-halfSize, +halfSize, 0.0, 1.0);
+		quad[1].a = Vector3f(+halfSize, -halfSize, 0.0);
+		quad[1].b = Vector3f(+halfSize, +halfSize, 0.0);
+		quad[1].c = Vector3f(-halfSize, +halfSize, 0.0);
         
         vertices = quad;
 		
@@ -80,7 +80,7 @@ class Geometry : ContextCreated {
 			
 			tcs[0][0].a = Vector2f(1.0, 0.0);
 			tcs[0][0].b = Vector2f(0.0, 1.0);
-			tcs[0][0].c = Vector2f(0.0, 1.0);
+			tcs[0][0].c = Vector2f(0.0, 0.0);
 			
 			tcs[0][1].a = Vector2f(1.0, 0.0);
 			tcs[0][1].b = Vector2f(1.0, 1.0);

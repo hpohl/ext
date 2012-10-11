@@ -3,8 +3,12 @@ module ext.gui.layout;
 import std.algorithm;
 
 import ext.gui.exception;
+import ext.gui.picture;
+import ext.gui.udim;
 import ext.gui.widget;
+import ext.math.vector;
 import ext.render.target;
+import ext.resource.image;
 import ext.window.inputdevice;
 
 
@@ -16,10 +20,13 @@ import ext.window.inputdevice;
 class Layout {
 	/**
 	 * Creates a layout from an input device of which
-	 *  to take the input from.
+	 * to take the input from. Also specializes how the
+     * mouse pointer should look like.
 	 */
-	this(InputDevice inputDevice) {
+	this(InputDevice inputDevice, Image mousePointer) {
 		_inputDevice = inputDevice;
+        _mousePointer = new Picture(mousePointer);
+        _mousePointer.size = UDim(Vector2f(0.0, 0.0), Vector2i(48, 48));
 	}
 	
 	/// Draws all widgets of the layout to the target.
@@ -27,13 +34,19 @@ class Layout {
 		foreach (wid; _widgets) {
 			wid.draw(target);
 		}
+        
+        // Update mouse position & draw cursor.
+        auto rel = Vector2f(0.0, 0.0);
+        auto abs = cast(Vector2i)_inputDevice.mousePosition;
+        _mousePointer.pos = UDim(rel, abs);
+        _mousePointer.draw(target);
 	}
 	
 	@property {
 		/// Add a widget to this layout.
 		void add(Widget w) {
 			if (find(_widgets, w).length) {
-				return;
+				throw new GUIException("Cannot add widget to layout: Already added.");
 			}
 			_widgets ~= w;
 		}
@@ -50,14 +63,20 @@ class Layout {
 		
 		nothrow pure {
 			/// Returns all widgets of this layout.
-			inout(Widget[]) widgets() inout {
+			inout(Widget)[] widgets() inout {
 				return _widgets;
 			}
+            
+            /// Return the picture of the mouse pointer.
+            inout(Picture) mousePointer() inout {
+                return _mousePointer;
+            }
 		}
 	}
 	
 	private {
 		InputDevice _inputDevice;
 		Widget[] _widgets;
+        Picture _mousePointer;
 	}	
 }

@@ -91,11 +91,11 @@ class Material : Resource {
     }
     
     /// Returns a new program if no one has been created for this context.
-    Program getProgram(Context con) {
+    inout(Program) getProgram(Context con) inout {
         if (con !in _programs) {
             auto prog = genProgram(con);
-            _programs[con] = prog;
-            return prog;
+            //(*cast(Material*)(&this))._programs[con] = prog;
+            return cast(inout Program)prog;
         }
         return _programs[con];
     }

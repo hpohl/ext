@@ -49,12 +49,12 @@ class Node(T) {
 	// Properties.
 	@property nothrow pure {
 		/// Returns the parents (if any) of this node.
-		inout(T[]) parents() inout {
+		inout(T)[] parents() inout {
 			return _parents;
 		}
 		
 		/// Returns the children (if any) of this node.
-		inout(T[]) children() inout {
+		inout(T)[] children() inout {
 			return _children;
 		}
 	}

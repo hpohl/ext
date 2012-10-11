@@ -25,8 +25,8 @@ class Target : ext.render.target.Target {
 		_size = size;
 		
 		// Create framebuffer object.
-		context.cglGenFramebuffers(1, &_fbo);
-		scope(failure) context.cglDeleteFramebuffers(1, &_fbo);
+		context.glGenFramebuffers(1, &_fbo);
+		scope(failure) context.glDeleteFramebuffers(1, &_fbo);
 		
 		bind();
 		
@@ -35,23 +35,23 @@ class Target : ext.render.target.Target {
 		_colorAttachment.size = size;
 
 		// Bind colour attachment.
-		context.cglBindTexture(GL_TEXTURE_2D, _colorAttachment.name);
-		context.cglFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+		context.glBindTexture(GL_TEXTURE_2D, _colorAttachment.name);
+		context.glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
 			GL_TEXTURE_2D, _colorAttachment.name, 0);
 
 		// Generate OpenGL render buffer as depth attachment.
-		context.cglGenRenderbuffers(1, &_rbo);
-		scope(failure) context.cglDeleteRenderbuffers(1, &_rbo);
+		context.glGenRenderbuffers(1, &_rbo);
+		scope(failure) context.glDeleteRenderbuffers(1, &_rbo);
 		
-		context.cglBindRenderbuffer(GL_RENDERBUFFER, _rbo);
-		context.cglRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, size.x, size.y);
+		context.glBindRenderbuffer(GL_RENDERBUFFER, _rbo);
+		context.glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, size.x, size.y);
 		
 		// Bind depth attachment.
-		context.cglFramebufferRenderbuffer(GL_FRAMEBUFFER,
+		context.glFramebufferRenderbuffer(GL_FRAMEBUFFER,
 			GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, _rbo);
 		
 		// Check for completeness.
-		auto completeness = context.cglCheckFramebufferStatus(GL_FRAMEBUFFER);
+		auto completeness = context.glCheckFramebufferStatus(GL_FRAMEBUFFER);
 		
         if (completeness != GL_FRAMEBUFFER_COMPLETE) {
             throw new OpenGLException("Framebuffer not complete.");
@@ -61,14 +61,14 @@ class Target : ext.render.target.Target {
 	~this() {
 		// Release as much as possible, come hell or high water.
 		scope(exit) {
-			context.cglDeleteFramebuffers(1, &_fbo);
-			context.cglDeleteRenderbuffers(1, &_rbo);
+			context.glDeleteFramebuffers(1, &_fbo);
+			context.glDeleteRenderbuffers(1, &_rbo);
 		}
 	}
     
     /// Binds the framebuffer.
     void bind() {
-        context.cglBindFramebuffer(GL_FRAMEBUFFER, _fbo);
+        context.glBindFramebuffer(GL_FRAMEBUFFER, _fbo);
     }
 	
 	// Properties...
@@ -89,7 +89,7 @@ class Target : ext.render.target.Target {
 	override {
 		void clear() {
 			bind();
-			context.cglClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			context.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		}
 		
 		@property {

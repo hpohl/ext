@@ -11,7 +11,7 @@ import ext.render.target;
  */
 class Widget {
 	/// Creates a widget from it's position and size.
-	this(in UDim position = UDim(), in UDim size = UDim()) {
+	this(ref const UDim position = UDim(), ref const UDim size = UDim()) {
 		_pos = position;
 		_size = size;
 	}
@@ -23,14 +23,24 @@ class Widget {
 	
 	@property nothrow pure {
 		/// Returns the position in UDim.
-		auto ref pos() inout {
+		UDim pos() const {
 			return _pos;
 		}
+        
+        /// Sets the position.
+        void pos(ref const UDim pos) {
+            _pos = pos;
+        }
 		
 		/// Returns the size in UDim.
-		auto ref size() inout {
+		UDim size() const {
 			return _size;
 		}
+        
+        /// Sets the size.
+        void size(ref const UDim size) {
+            _size = size;
+        }
 	}
 	
 	private {

@@ -1,7 +1,5 @@
 module ext.window.freeglut.api;
 
-import core.stdc.config;
-
 
 alias uint GLenum;
 alias ubyte GLboolean;
@@ -482,7 +480,7 @@ void* glutGetMenuData();
 void glutSetMenuData(void* data);
 
 // Font stuff
-int  glutBitmapHeight(void* font);
+int glutBitmapHeight(void* font);
 GLfloat glutStrokeHeight(void* font);
 void glutBitmapString(void* font, const char* string);
 void glutStrokeString(void* font, const char* string);

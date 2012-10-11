@@ -12,8 +12,7 @@ struct UDim {
 	 * Creates a unified dimension from relative and absolute
 	 * 2D coordinates.
 	 */
-	this(in Vector2f rel = Vector2f(0.0, 0.0),
-		in Vector2i abs = Vector2i(0, 0)) {
+	this(ref const Vector2f rel, ref const Vector2i abs = Vector2i(0, 0)) {
 		_rel = rel;
 		_abs = abs;
 	}
@@ -23,15 +22,25 @@ struct UDim {
 		auto ref rel() inout {
 			return _rel;
 		}
+        
+        /// Sets the relative position.
+        void rel(ref const Vector2f rel) {
+            _rel = rel;
+        }
 		
 		/// Returns the absolute position.
-		auto ref abs() inout {
+		const Vector2i abs() const {
 			return _abs;
 		}
+        
+        /// Sets the absolute position.
+        void abs(ref const Vector2i abs) {
+            _abs = abs;
+        }
 	}
 	
 	private {
-		Vector2f _rel;
+        Vector2f _rel;
 		Vector2i _abs;
 	}
 }

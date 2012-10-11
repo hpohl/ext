@@ -1,7 +1,7 @@
 module ext.render.opengl.api;
 
 
-nothrow package extern (C):
+nothrow extern (C):
 
 // GL_core
 alias uint GLenum;

@@ -18,55 +18,39 @@ class Texture : ext.render.texture.Texture {
 	mixin OpenGLObject;
 	
 	static {
-		/// Converts a texture format to OpenGL.
-		GLenum toGLFormat(Format format) pure {
+		/// Converts a texture internal format to OpenGL.
+		GLenum toGLInternalFormat(Format format) pure {
 			switch (format) {
 				case Format.RGB: return GL_RGB8;
 				case Format.RGBA: return GL_RGBA8;
-				default: throw new OpenGLException("Not supported texture format.");
+				default: throw new OpenGLException("Not supported texture internal format.");
 			}
 		}
-	}
-	
-	/// Creates by the given context and an OpenGL format.
-	this(GLenum format, Context context) {
-		super(Format.internal, context);
-		_format = format;
-		
-		// Creates the OpenGL texture object.
-		GLuint tmpname;
-		context.cglGenTextures(1, &tmpname);
-		_name = tmpname;
-		scope(failure) context.cglDeleteTextures(1, &_name);
         
-        bind();
-        context.cglTexParameteri(GL_TEXTURE_2D,
-            GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        context.cglTexParameteri(GL_TEXTURE_2D,
-            GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        context.cglTexParameteri(GL_TEXTURE_2D,
-            GL_TEXTURE_WRAP_S, GL_REPEAT);
-        context.cglTexParameteri(GL_TEXTURE_2D,
-            GL_TEXTURE_WRAP_T, GL_REPEAT);
+        /// Converts a texture format top OpenGL.
+        GLenum toGLFormat(Format format) pure {
+            switch (format) {
+                case Format.RGB: return GL_RGB;
+                case Format.RGBA: return GL_RGBA;
+                default: throw new OpenGLException("Not supported texture format.");
+            }
+        }
 	}
 	
 	/// Creates by the given context and format.
 	this(Format format, Context context) {
 		super(format, context);
 		
-		// Convert to OpenGL.
-		_format = toGLFormat(format);
-		
 		// Creates the OpenGL texture object.
 		GLuint tmpname;
-		context.cglGenTextures(1, &tmpname);
+		context.glGenTextures(1, &tmpname);
 		_name = tmpname;
-		scope(failure) context.cglDeleteTextures(1, &_name);
+		scope(failure) context.glDeleteTextures(1, &_name);
 	}
 	
 	~this() {
 		// Delete OpenGL texture.
-		context.cglDeleteTextures(1, &_name);
+		context.glDeleteTextures(1, &_name);
 	}
 	
 	@property {
@@ -79,14 +63,14 @@ class Texture : ext.render.texture.Texture {
 			Vector2ui size() const {
 				bind();
 				GLint w, h;
-				context.cglGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &w);
-				context.cglGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &h);
+				context.glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &w);
+				context.glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &h);
 				return Vector2ui(w, h);
 			}
 			
 			void size(in Vector2ui size) {
 				bind();
-                context.cglTexStorage2D(GL_TEXTURE_2D, 1, _format, size.x, size.y);
+                context.glTexStorage2D(GL_TEXTURE_2D, 1, toGLInternalFormat(format), size.x, size.y);
 			}
 			
 			inout(ubyte)[] data() inout {
@@ -98,7 +82,7 @@ class Texture : ext.render.texture.Texture {
 				ret.length = size.x * size.y * numChannels();
 				
 				// Get the texture data.
-				context.cglGetTexImage(GL_TEXTURE_2D, 0, _format,
+				context.glGetTexImage(GL_TEXTURE_2D, 0, toGLFormat(format),
 					 GL_UNSIGNED_BYTE, cast(void*)ret.ptr);
 				
 				return ret;
@@ -106,20 +90,20 @@ class Texture : ext.render.texture.Texture {
 			
 			void data(const(ubyte)[] data) {
 				bind();
-				context.cglTexImage2D(GL_TEXTURE_2D, 0, _format, size.x,
-					size.y, 0, _format, GL_UNSIGNED_BYTE, cast(const void*)data.ptr);
+                context.glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0,
+                    size.x, size.y, toGLFormat(format), GL_UNSIGNED_BYTE,
+                    cast(const GLvoid*)data.ptr);
 			}
 		}
 	}
 	
 	/// Binds the function to context.
 	void bind() const {
-		context.cglBindTexture(GL_TEXTURE_2D, _name);
+		context.glBindTexture(GL_TEXTURE_2D, _name);
 	}
 	
 	private {
 		const GLuint _name;
-		const GLenum _format;
 		
 		/// Returns the number of channels.
 		uint numChannels() const pure {

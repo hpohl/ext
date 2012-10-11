@@ -78,6 +78,9 @@ enum IL_HALF = 0x140B;
 // Image file formats.
 enum IL_BMP = 0x0420;
 enum IL_PNG = 0x042A;
+enum IL_TGA = 0x042D;
+enum IL_DDS = 0x0437;
+enum IL_RAW = 0x0430;
 
 enum IL_NO_ERROR = 0x0000;
 
@@ -94,6 +97,7 @@ ILuint ilSaveL(ILenum Type, void* Lump, ILuint Size);
 ILboolean ilTexImage(ILuint Width, ILuint Height, ILuint Depth, ILubyte NumChannels, ILenum Format, ILenum Type, void* Data);
 
 const(char)* iluErrorString(ILenum Error);
+ILboolean iluFlipImage();
 void iluInit();
 
 

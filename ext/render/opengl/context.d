@@ -64,13 +64,15 @@ class Context : ext.render.context.Context {
 		mixin(generateFuncLoader);
 		
 		// Enables.
-		this.cglEnable(GL_DEPTH_TEST);
+        this.glEnable(GL_BLEND);
+        this.glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		//this.glEnable(GL_DEPTH_TEST);
 	}
 	
-	/// Used to call OpenGL functions.
+	/// Used to call OpenGL functions without checks.
 	auto opDispatch(string name, Args...)(Args args) const
-    if (name[0 .. 2] == "gl") {
-    	mixin("return _functions." ~ name ~ "(args);");
+    if (name.length > 9 && name[0 .. 9] == "nocheckgl") {
+    	mixin("return _functions.gl" ~ name[9 .. $] ~ "(args);");
     }
 	
 	/**
@@ -78,12 +80,12 @@ class Context : ext.render.context.Context {
 	 * Uses c as prefix, e.g. cglGenTextures.
 	 */
 	auto opDispatch(string name, Args...)(Args args) const
-	if (name[0 .. 3] == "cgl") {
-		scope(exit) throwOnGLError(this, name[1 .. $]);
+	if (name.length > 2 && name[0 .. 2] == "gl") {
+		scope(exit) throwOnGLError(this, name[0 .. $]);
 		version(NoOpenGLChecks) {
 			// Do not check.
 		} else {
-			mixin("return _functions." ~ name[1 .. $] ~ "(args);");
+			mixin("return _functions." ~ name[0 .. $] ~ "(args);");
 		}
 	} 
 	
@@ -93,7 +95,7 @@ class Context : ext.render.context.Context {
 			return new ext.render.opengl.texture.Texture(format, this);
 		}
 		
-		ext.render.opengl.target.Target createTarget(in Vector2ui size) {
+		ext.render.opengl.target.Target createTarget(ref const Vector2ui size) {
 			return new ext.render.opengl.target.Target(this, size);
 		}
 		

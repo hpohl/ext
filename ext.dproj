@@ -25,7 +25,7 @@
     <ObjectsDirectory>obj/Release</ObjectsDirectory>
     <OutputName>ext</OutputName>
     <Target>Executable</Target>
-    <ExtraLinkerArguments>-L-ldl -L-lglut</ExtraLinkerArguments>
+    <ExtraLinkerArguments>-L-ldl -L-lglut -L-lIL -L-lILU</ExtraLinkerArguments>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Unittest|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -126,6 +126,8 @@
     <Compile Include="ext\render\program.d" />
     <Compile Include="ext\resource\material.d" />
     <Compile Include="ext\render\opengl\program.d" />
+    <Compile Include="ext\misc\fpscalc.d" />
+    <Compile Include="ext\resource\external\freeimage.d" />
   </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>

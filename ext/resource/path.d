@@ -258,7 +258,7 @@ struct Path {
 	 * 
 	 * Yields to: location:name
 	 */
-	this(in Location loc, string name) {
+	this(ref const Location loc, string name) {
 		if (name.empty) {
 			throw new ResourceException("Trying to create a path to a resource with
 				no name");

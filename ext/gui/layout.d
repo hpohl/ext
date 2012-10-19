@@ -33,6 +33,7 @@ class Layout {
 	void draw(Target target) {
 		foreach (wid; _widgets) {
 			wid.draw(target);
+            target.clearDepth();
 		}
         
         // Update mouse position & draw cursor.

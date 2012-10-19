@@ -1,23 +1,34 @@
 module ext.render.opengl.program;
 
+import std.ascii;
+import std.conv;
+import std.stdio;
+
 import ext.math.matrix;
 import ext.render.opengl.api;
 import ext.render.opengl.context;
 import ext.render.opengl.exception;
 import ext.render.opengl.texture;
 import ext.render.program;
+import ext.render.texture;
 import ext.resource.image;
 import ext.resource.material;
 
 
 /**
- * OpenGL of a program using shaders.
+ * OpenGL of a program using shaders. Stub right now.
  */
 class Program : ext.render.program.Program {
     mixin OpenGLObject;
     
+    /// The OpenGL vertex location in shader.s
     enum vertexLocation = 0;
+    
+    // Texture locations in shaders.
     enum texLocations = [1, 2, 3, 4, 5, 6, 7, 8];
+    
+    /// Fragment shader header.
+    enum fsHeader = "#version330" ~ newline;
     
     /// Specifies the OpenGL context to use.
     this(Context con, const Material mat) {
@@ -45,22 +56,25 @@ class Program : ext.render.program.Program {
     
     /// Binds the program to the used OpenGL context.
     void use() {
-        context.glActiveTexture(GL_TEXTURE0);
-        _textures[0].bind();
         context.glUseProgram(_prog);
-        auto loc = context.glGetUniformLocation(_prog, "tex".ptr);
-        context.glUniform1i(loc, 0);
+        
+        foreach (i, tex; _textures) {
+            context.glActiveTexture(cast(GLenum)(GL_TEXTURE0 + i));
+            tex.bind();
+            auto loc = context.glGetUniformLocation(_prog, ("tex" ~ to!string(i)).ptr);
+            context.glUniform1i(loc, 0);
+        }
     }
     
     /// Sets the model view matrix.
-    void uniformModelViewMatrix(in Matrix4x4f mat) {
+    void uniformModelViewMatrix(ref const Matrix4x4f mat) {
         auto loc = context.glGetUniformLocation(_prog, "mdlview".ptr);
         use();
         context.glUniformMatrix4fv(loc, 1, GL_TRUE, mat.ptr);
     }
     
     /// Sets the projection matrix.
-    void uniformProjectionMatrix(in Matrix4x4f mat) {
+    void uniformProjectionMatrix(ref const Matrix4x4f mat) {
         auto loc = context.glGetUniformLocation(_prog, "proj".ptr);
         use();
         context.glUniformMatrix4fv(loc, 1, GL_TRUE, mat.ptr);
@@ -85,68 +99,55 @@ class Program : ext.render.program.Program {
     
     override {
         void fromMaterial(const Material mat) {
-            enum vsSource = "
-                #version 330
-                
-                layout(location=0) in vec4 position;
-                layout(location=1) in vec2 texCoord;
-                
-                out vec2 exTexCoord;
-                
-                uniform mat4 mdlview;
-                uniform mat4 proj;
-                
-                
-                void main() {
-                    gl_Position = (proj * mdlview) * position;
-                    exTexCoord = texCoord; 
-                }
-                ";
-            
-            auto vptr = vsSource.ptr;
-            GLsizei vlen = vsSource.length;
-            context.glShaderSource(_vs, 1, &vptr, &vlen);
-            context.glCompileShader(_vs);
-            
-            enum fsSource = "
-                #version 330
-                
-                in vec2 exTexCoord;
-                
-                out vec4 color;
-                
-                uniform sampler2D tex;
-                
-                
-                void main() {
-                    //color = vec4(1.0, 0.0, 0.0, 1.0);
-                    color = texture(tex, exTexCoord);
-                    //color = vec4(exTexCoord, 0.0, 1.0);
-                }
-                ";
-            
-            auto fptr = fsSource.ptr;
-            GLsizei flen = fsSource.length;
-            context.glShaderSource(_fs, 1, &fptr, &flen);
-            context.glCompileShader(_fs);
+            _textures.length = 0;
+            foreach (tex; mat.textures) {
+                _textures ~= cast(ext.render.opengl.texture.Texture)tex.getTexture(context);
+            }
             
             context.glAttachShader(_prog, _vs);
             context.glAttachShader(_prog, _fs);
             
-            context.glLinkProgram(_prog);
+            _updateShaders();
             
+            context.glLinkProgram(_prog);
             context.glValidateProgram(_prog);
             
             GLint stat;
             context.glGetProgramiv(_prog, GL_VALIDATE_STATUS, &stat);
             
             if (stat != GL_TRUE) {
+                GLint size;
+                context.glGetProgramiv(_prog, GL_INFO_LOG_LENGTH, &size);
+                writeln(size);
+                
+                char[] log = new char[size];
+                context.glGetProgramInfoLog(_prog, size, null, log.ptr);
+                writeln(log);
+                
                 throw new OpenGLException("Material generated program is not valid.");
             }
+        }
+        
+        @property {
+            inout(ext.render.texture.Texture)[] textures() inout {
+                return _textures;
+            }
             
-            _textures.length = 0;
-            foreach (tex; mat.textures) {
-                _textures ~= cast(Texture)tex.getTexture(context);
+            void textures(ext.render.texture.Texture[] textures) {
+                ext.render.opengl.texture.Texture[] oglTexs;
+                
+                foreach (tex; textures) {
+                    auto current = cast(ext.render.opengl.texture.Texture)tex;
+                    if (!current) {
+                        throw new OpenGLException("Unable to set program textures: Not an OpenGL texture.");
+                    }
+                    if (current.context != context) {
+                        throw new OpenGLException("Unable to set program textures: Invalid OpenGL context.");
+                    }
+                    oglTexs ~= current;
+                }
+                
+                _textures = oglTexs;
             }
         }
     }
@@ -155,6 +156,51 @@ class Program : ext.render.program.Program {
         GLuint _prog;
         GLuint _vs;
         GLuint _fs;
-        Texture[] _textures;
+        ext.render.opengl.texture.Texture[] _textures;
+        
+        /// Updates all shaders.
+        void _updateShaders() {
+            // Vertex shader.
+            string vsSource = "#version 330" ~ newline ~ "layout(location=0) in vec4 position;" ~ newline;
+            
+            foreach (i; 0 .. _textures.length) {
+                vsSource ~= "layout(location=" ~ to!string(texLocations[i]) ~ ") in vec2 texc" ~ to!string(i) ~ ";" ~ newline;
+                vsSource ~= "out vec2 extexc" ~ to!string(i) ~ ";" ~ newline;
+            }
+            
+            vsSource ~= "uniform mat4 mdlview;" ~ newline;
+            vsSource ~= "uniform mat4 proj;" ~ newline;
+            
+            vsSource ~= "void main() {" ~ newline;
+            vsSource ~= "gl_Position = (proj * mdlview) * position;" ~ newline;
+            
+            foreach (i; 0 .. _textures.length) {
+                vsSource ~= "extexc" ~ to!string(i) ~ " = texc" ~ to!string(i) ~ ";" ~ newline;
+            }
+            
+            vsSource ~= "}" ~ newline;
+            
+            auto vptr = vsSource.ptr;
+            GLsizei vlen = cast(GLsizei)vsSource.length;
+            context.glShaderSource(_vs, 1, &vptr, &vlen);
+            context.glCompileShader(_vs);
+            
+            // Fragment shader.
+            string fsSource = "#version 330" ~ newline ~ "out vec4 color;" ~ newline;
+            
+            foreach (i; 0 .. _textures.length) {
+                fsSource ~= "in vec2 extexc" ~ to!string(i) ~ ";" ~ newline;
+                fsSource ~= "uniform sampler2D tex" ~ to!string(i) ~ ";" ~ newline;
+            }
+            
+            fsSource ~= "void main() {" ~ newline;
+            fsSource ~= "color = texture(tex0, extexc0);" ~ newline;
+            fsSource ~= "}" ~ newline;
+            
+            auto fptr = fsSource.ptr;
+            GLsizei flen = cast(GLsizei)fsSource.length;
+            context.glShaderSource(_fs, 1, &fptr, &flen);
+            context.glCompileShader(_fs);
+        }
     } 
 }

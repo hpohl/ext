@@ -42,9 +42,9 @@ class Texture : ext.render.texture.Texture {
 		super(format, context);
 		
 		// Creates the OpenGL texture object.
-		GLuint tmpname;
+        GLuint tmpname;
 		context.glGenTextures(1, &tmpname);
-		_name = tmpname;
+        _name = tmpname;
 		scope(failure) context.glDeleteTextures(1, &_name);
 	}
 	
@@ -68,16 +68,16 @@ class Texture : ext.render.texture.Texture {
 				return Vector2ui(w, h);
 			}
 			
-			void size(in Vector2ui size) {
+			void size(ref const Vector2ui size) {
 				bind();
                 context.glTexStorage2D(GL_TEXTURE_2D, 1, toGLInternalFormat(format), size.x, size.y);
 			}
 			
-			inout(ubyte)[] data() inout {
+			ubyte[] data() const {
 				bind();
 				
 				// Allocate memory to return.
-				inout(ubyte)[] ret;
+				ubyte[] ret;
 				auto size = size;
 				ret.length = size.x * size.y * numChannels();
 				

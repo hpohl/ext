@@ -26,14 +26,13 @@ enum Key {
 /**
  * An input device catches input events and sends them out to public.
  */
-abstract class InputDevice {
-	
+interface InputDevice {
 	/// If the mouse button given by mb is pressed.
-	abstract bool isPressed(MouseButton mb);
+	bool isPressed(MouseButton mb);
     
     /// Returns the mouse position.
     @property Vector2ui mousePosition();
     
     /// If the key is pressed.
-    abstract bool isPressed(Key k);
+    bool isPressed(Key k);
 }

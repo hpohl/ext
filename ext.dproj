@@ -48,63 +48,26 @@
     <Folder Include="ext\window\freeglut\" />
     <Folder Include="ext\gui\" />
     <Folder Include="ext\resource\" />
-    <Folder Include="ext\resource\external\" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="samples\current\main.d">
-      <LastGenOutput>/home/henning/projects/d/extmd/ext/obj/Debug/main.o</LastGenOutput>
-    </Compile>
-    <Compile Include="ext\misc\exception.d">
-      <LastGenOutput>/home/henning/projects/d/extmd/ext/obj/Debug/exception.o</LastGenOutput>
-    </Compile>
-    <Compile Include="ext\misc\dynlib.d">
-      <LastGenOutput>/home/henning/projects/d/extmd/ext/obj/Debug/dynlib.o</LastGenOutput>
-    </Compile>
-    <Compile Include="ext\misc\node.d">
-      <LastGenOutput>/home/henning/projects/d/extmd/ext/obj/Debug/node.o</LastGenOutput>
-    </Compile>
-    <Compile Include="ext\render\context.d">
-      <LastGenOutput>/home/henning/projects/d/extmd/ext/obj/Debug/context.o</LastGenOutput>
-    </Compile>
-    <Compile Include="ext\render\texture.d">
-      <LastGenOutput>/home/henning/projects/d/extmd/ext/obj/Debug/texture.o</LastGenOutput>
-    </Compile>
-    <Compile Include="ext\math\matrix.d">
-      <LastGenOutput>/home/henning/projects/d/extmd/ext/obj/Debug/matrix.o</LastGenOutput>
-    </Compile>
-    <Compile Include="ext\math\quaternion.d">
-      <LastGenOutput>/home/henning/projects/d/extmd/ext/obj/Debug/quaternion.o</LastGenOutput>
-    </Compile>
-    <Compile Include="ext\math\vector.d">
-      <LastGenOutput>/home/henning/projects/d/extmd/ext/obj/Debug/vector.o</LastGenOutput>
-    </Compile>
-    <Compile Include="ext\render\target.d">
-      <LastGenOutput>/home/henning/projects/d/extmd/ext/obj/Debug/target.o</LastGenOutput>
-    </Compile>
-    <Compile Include="ext\render\opengl\context.d">
-      <LastGenOutput>/home/henning/projects/d/extmd/ext/obj/Debug/context.o</LastGenOutput>
-    </Compile>
-    <Compile Include="ext\render\opengl\api.d">
-      <LastGenOutput>/home/henning/projects/d/extmd/ext/obj/Debug/api.o</LastGenOutput>
-    </Compile>
-    <Compile Include="ext\render\opengl\texture.d">
-      <LastGenOutput>/home/henning/projects/d/extmd/ext/obj/Debug/ext.render.opengl.texture.o</LastGenOutput>
-    </Compile>
-    <Compile Include="ext\render\opengl\target.d">
-      <LastGenOutput>/home/henning/projects/d/extmd/ext/obj/Debug/target.o</LastGenOutput>
-    </Compile>
-    <Compile Include="ext\render\exception.d">
-      <LastGenOutput>/home/henning/projects/d/extmd/ext/obj/Debug/ext.render.exception.o</LastGenOutput>
-    </Compile>
-    <Compile Include="ext\render\opengl\exception.d">
-      <LastGenOutput>/home/henning/projects/d/extmd/ext/obj/Debug/exception.o</LastGenOutput>
-    </Compile>
-    <Compile Include="ext\window\window.d">
-      <LastGenOutput>/home/henning/projects/d/extmd/ext/obj/Debug/window.o</LastGenOutput>
-    </Compile>
-    <Compile Include="ext\window\freeglut\api.d">
-      <LastGenOutput>/home/henning/projects/d/extmd/ext/obj/Debug/api.o</LastGenOutput>
-    </Compile>
+    <Compile Include="samples\current\main.d" />
+    <Compile Include="ext\misc\exception.d" />
+    <Compile Include="ext\misc\dynlib.d" />
+    <Compile Include="ext\misc\node.d" />
+    <Compile Include="ext\render\context.d" />
+    <Compile Include="ext\render\texture.d" />
+    <Compile Include="ext\math\matrix.d" />
+    <Compile Include="ext\math\quaternion.d" />
+    <Compile Include="ext\math\vector.d" />
+    <Compile Include="ext\render\target.d" />
+    <Compile Include="ext\render\opengl\context.d" />
+    <Compile Include="ext\render\opengl\api.d" />
+    <Compile Include="ext\render\opengl\texture.d" />
+    <Compile Include="ext\render\opengl\target.d" />
+    <Compile Include="ext\render\exception.d" />
+    <Compile Include="ext\render\opengl\exception.d" />
+    <Compile Include="ext\window\window.d" />
+    <Compile Include="ext\window\freeglut\api.d" />
     <Compile Include="ext\window\freeglut\window.d" />
     <Compile Include="ext\window\inputdevice.d" />
     <Compile Include="ext\window\freeglut\inputdevice.d" />
@@ -119,7 +82,6 @@
     <Compile Include="ext\gui\layout.d" />
     <Compile Include="ext\render\geometry.d" />
     <Compile Include="ext\render\opengl\geometry.d" />
-    <Compile Include="ext\resource\external\devil.d" />
     <Compile Include="ext\resource\pool.d" />
     <Compile Include="ext\resource\path.d" />
     <Compile Include="ext\gui\exception.d" />
@@ -127,7 +89,7 @@
     <Compile Include="ext\resource\material.d" />
     <Compile Include="ext\render\opengl\program.d" />
     <Compile Include="ext\misc\fpscalc.d" />
-    <Compile Include="ext\resource\external\freeimage.d" />
+    <Compile Include="ext\resource\model.d" />
   </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>

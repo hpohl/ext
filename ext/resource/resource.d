@@ -12,8 +12,10 @@ import ext.resource.path;
  * a creator.
  */
 mixin template AutoRegister(T, Resource.KeyType id) {
+    import ext.resource.path;
+    
 	private {
-		static Resource creator(in Path path) {
+		static Resource creator(ref const Path path) {
 			return new T(path);
 		}
 		
@@ -35,7 +37,7 @@ class Resource {
 	
 	static {
 		/// Resource creator.
-		alias Resource function(in Path) Creator;
+		alias Resource function(ref const Path) Creator;
 		
 		/// Registers resource type for serialization.
 		void register(Creator creator, KeyType id) {
@@ -61,7 +63,7 @@ class Resource {
 	 * 
 	 * "img.general:grass" should be in img/general -> grass item in package.
 	 */
-	this(in Path path) {
+	this(ref const Path path) {
 		_path = path;
 	}
 	
@@ -73,8 +75,11 @@ class Resource {
 	}
 	
 	abstract {
+        /// Returns the path to the depencies.
+        const(Path)[] depencies() const;
+        
 		/// Loads the resource from a chunk of data.
-		void loadFromRaw(const(void)[] data);
+		void loadFromRaw(const(void)[] data, Resource[] depencies);
 		
 		/// Saves the resource.
 		void[] saveToRaw() const;

@@ -32,10 +32,10 @@ class Texture : ContextCreated {
 		abstract Vector2ui size() const;
 		
 		/// Resizes the texture.
-		abstract void size(in Vector2ui size);
+		abstract void size(ref const Vector2ui size);
 		
 		/// Returns the image data.
-		abstract inout(ubyte)[] data() inout;
+		abstract ubyte[] data() const;
 		
 		/// Sets the image data.
 		abstract void data(const(ubyte)[] data);

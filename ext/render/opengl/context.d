@@ -66,7 +66,7 @@ class Context : ext.render.context.Context {
 		// Enables.
         this.glEnable(GL_BLEND);
         this.glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		//this.glEnable(GL_DEPTH_TEST);
+		this.glEnable(GL_DEPTH_TEST);
 	}
 	
 	/// Used to call OpenGL functions without checks.
@@ -77,7 +77,6 @@ class Context : ext.render.context.Context {
 	
 	/**
 	 * Used to call OpenGL functions and automatically throw on error.
-	 * Uses c as prefix, e.g. cglGenTextures.
 	 */
 	auto opDispatch(string name, Args...)(Args args) const
 	if (name.length > 2 && name[0 .. 2] == "gl") {

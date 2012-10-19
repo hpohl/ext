@@ -4,6 +4,7 @@ import std.stdio;
 
 import ext.render.context;
 import ext.render.program;
+import ext.resource.exception;
 import ext.resource.image;
 import ext.resource.path;
 import ext.resource.resource;
@@ -81,7 +82,7 @@ class Material : Resource {
     /**
      * Constructor to use.
      */
-    this(in Path path) {
+    this(ref const Path path) {
         super(path);
     }
     
@@ -94,7 +95,7 @@ class Material : Resource {
     inout(Program) getProgram(Context con) inout {
         if (con !in _programs) {
             auto prog = genProgram(con);
-            //(*cast(Material*)(&this))._programs[con] = prog;
+            (*cast(Material*)(&this))._programs[con] = prog;
             return cast(inout Program)prog;
         }
         return _programs[con];
@@ -140,14 +141,17 @@ class Material : Resource {
         void textures(Image[] textures) {
             _textures = textures;
         }
-        
-        /// Appends a texture to the textures range.
-        void appendTexture(Image img) {
-            _textures ~= img;
-        }
     }
     
     override {
+        const(Path)[] depencies() const {
+            Path[] ret;
+            foreach (img; _textures) {
+                ret ~= img.path;
+            }
+            return ret;
+        }
+        
         void[] saveToRaw() const {
             Color[] cols;
             cols ~= _ambient;
@@ -156,11 +160,21 @@ class Material : Resource {
             return cast(void[])cols;
         }
         
-        void loadFromRaw(const(void)[] data) {
+        void loadFromRaw(const(void)[] data, Resource[] depencies) {
             auto cols = cast(const(Color)[])data;
             _ambient = cols[0];
             _diffuse = cols[1];
             _specular = cols[2];
+            
+            _textures.length = 0;
+            foreach (res; depencies) {
+                auto img = cast(Image)res;
+                if (!img) {
+                    throw new ResourceException("Unable to load material from raw data:
+                        Loaded depency " ~ res.path.full ~ " is not an image.");
+                }
+                _textures ~= img;
+            }
         }
     }
     

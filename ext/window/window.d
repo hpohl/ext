@@ -1,7 +1,5 @@
 module ext.window.window;
 
-import std.signals;
-
 import ext.math.vector;
 import ext.render.target;
 import ext.window.inputdevice;
@@ -44,12 +42,4 @@ class Window {
 			inout(InputDevice) inputDevice() inout;
 		}
 	}
-	
-	//////////////////////////////////////////////////////
-	/// Emmited when window is ready to be drawn.
-	private static struct DrawSignal {
-		mixin Signal!();
-	}
-	
-	DrawSignal draw;
 }

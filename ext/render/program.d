@@ -1,6 +1,7 @@
 module ext.render.program;
 
 import ext.render.context;
+import ext.render.texture;
 import ext.resource.material;
 
 
@@ -18,5 +19,13 @@ class Program : ContextCreated {
     abstract {
         /// Specifies how the program works.
         void fromMaterial(const Material mat);
+        
+        @property {
+            /// Returns the textures.
+            inout(Texture)[] textures() inout;
+            
+            /// Sets the textures.
+            void textures(Texture[] textures);
+        }
     }
 }

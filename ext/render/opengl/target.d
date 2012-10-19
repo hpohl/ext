@@ -52,7 +52,6 @@ class Target : ext.render.target.Target {
 		
 		// Check for completeness.
 		auto completeness = context.glCheckFramebufferStatus(GL_FRAMEBUFFER);
-		
         if (completeness != GL_FRAMEBUFFER_COMPLETE) {
             throw new OpenGLException("Framebuffer not complete.");
         }
@@ -72,16 +71,19 @@ class Target : ext.render.target.Target {
     }
 	
 	// Properties...
-	@property {
+	@property nothrow pure {
+        /// Returns the name of the frame buffer.
 		GLuint fbo() {
 			return _fbo;
 		}
 		
+        // The texture to draw to.
 		ext.render.opengl.texture.Texture colorAttachment() {
 			return _colorAttachment;
 		}
 		
-		GLuint rbo() nothrow pure {
+        // The render buffer name.
+		GLuint rbo() {
 			return _rbo;
 		}
 	}
@@ -91,13 +93,18 @@ class Target : ext.render.target.Target {
 			bind();
 			context.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		}
+        
+        void clearDepth() {
+            bind();
+            context.glClear(GL_DEPTH_BUFFER_BIT);
+        }
 		
 		@property {
 			Vector2ui size() const {
 				return _size;
 			}
 			
-			void size(in Vector2ui size) {
+			void size(ref const Vector2ui size) {
 				assert(false, "Not yet implemented.");
 			}
 			

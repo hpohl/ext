@@ -1,13 +1,10 @@
 module ext.resource.pool;
 
 import std.algorithm;
-import std.array;
 import std.conv;
 import std.file;
 import std.path;
 import std.stdio;
-import std.string;
-import std.typecons;
 
 import ext.resource.exception;
 import ext.resource.path;
@@ -69,7 +66,7 @@ class Package {
 	 * Loads all resources available.
 	 * The file does not have to exist.
 	 */
-	void load() {
+	void load(Pool pool) {
 		if (!exists()) {
 			// Nothing to load, exit.
 			return;
@@ -89,6 +86,28 @@ class Package {
 		
 		// As long as we dont have reached the end of the file.
 		while (f.tell < f.size) {
+            // The depencies needed.
+            Resource[] deps;
+            
+            // Read the number of depencies.
+            ulong[1] nDepencies;
+            f.rawRead(nDepencies);
+            
+            // Load all depencies.
+            foreach (i; 0 .. nDepencies[0]) {
+                // Read the name length.
+                ulong[1] nLen;
+                f.rawRead(nLen);
+                
+                // Read the name.
+                char[] name;
+                name.length = nLen[0];
+                f.rawRead(name);
+                
+                // Load the depency.
+                deps ~= pool.load(Path(to!string(name)));
+            }
+            
 			// Read the id of the resource.
 			Resource.KeyType[1] id;
 			f.rawRead(id);
@@ -109,16 +128,16 @@ class Package {
 			// Read the data of the resource.
 			void[] data;
 			data.length = size[0];
-			f.rawRead(data);
+		    f.rawRead(data);
 			
 			// If the resource already exists ans has the same type.
 			if (name in _resources && id[0] == _resources[name].key) {
-				_resources[name].loadFromRaw(data);
+				_resources[name].loadFromRaw(data, deps);
 			} else {
 				// Replace the resource.
 				auto namestr = to!string(name);
 				auto res = Resource.create(id[0], Path(_loc, namestr));
-				res.loadFromRaw(data);
+				res.loadFromRaw(data, deps);
 				_resources[namestr] = res;
 			}
 		}
@@ -142,6 +161,18 @@ class Package {
 		
 		// Write all resources.
 		foreach (res; _resources) {
+            // Write the number of depencies.
+            f.rawWrite([cast(ulong)res.depencies.length]);
+            
+            // Write the depencies.
+            foreach (dep; res.depencies) {
+                // Write the name length.
+                f.rawWrite([cast(ulong)dep.full.length]);
+                
+                // Write the name itself.
+                f.rawWrite(dep.full);
+            }
+            
 			// Write the id of the resource.
 			f.rawWrite([res.key]);
 			
@@ -193,11 +224,11 @@ class Pool {
 	}
 	
 	/// Loads a resource from this pool.
-	R load(R = Resource)(in Path path) {
+	R load(R = Resource)(ref const Path path) {
 		if (path.location.value !in _packages) {
 			auto pkg = new Package(_basePath, path.location);
 			_packages[path.location.value] = pkg;
-			pkg.load();
+			pkg.load(this);
 		}
 		
 		return _packages[path.location.value].get!R(path.name);

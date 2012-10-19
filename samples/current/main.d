@@ -24,46 +24,48 @@ import ext.window.inputdevice;
 
 
 void createResources() {
-	auto pool = new Pool("packages");
-	
+    auto pool = new Pool("packages");
+    
     auto cur = new Image(Path("cursors:pointer"));
     cur.loadFromFile("images/cursor.tga");
     pool.save(cur);
     
-	auto img = new Image(Path("fun:tux"));
-	img.loadFromFile("images/tux.tga");
-	pool.save(img);
-	
-	auto mat = new Material(Path("material:general"));
-	mat.ambient = Color(0.0, 0.0, 0.0, 1.0);
-	mat.diffuse = Color(1.0, 0.0, 0.0, 1.0);
-	mat.specular = Color(0.0, 0.0, 0.0, 1.0);
-	pool.save(mat);
-	
-	pool.write();
+    auto img = new Image(Path("fun:tux"));
+    img.loadFromFile("images/tux.tga");
+    pool.save(img);
+    
+    auto mat = new Material(Path("material:general"));
+    mat.ambient = Color(0.0, 0.0, 0.0, 1.0);
+    mat.diffuse = Color(1.0, 0.0, 0.0, 1.0);
+    mat.specular = Color(0.0, 0.0, 0.0, 1.0);
+    mat.textures = mat.textures ~ img;
+    
+    pool.save(mat);
+    
+    pool.write();
 }
 
 void main() {
-	createResources();
-	
-	auto pool = new Pool("packages");
-	auto img = pool.load!Image(Path("fun:tux"));
+    createResources();
+    
+    auto pool = new Pool("packages");
+    auto mat = pool.load!Material(Path("material:general"));
+    auto img = pool.load!Image(Path("fun:tux"));
     auto cur = pool.load!Image(Path("cursors:pointer"));
-	
-	
-	////////////////////////////////////////
-	auto win = new Window;
-	
-	auto layout = new Layout(win.inputDevice, cur);
-	auto pic = new Picture(img);
+    
+    ////////////////////////////////////////
+    auto win = new Window;
+    
+    auto layout = new Layout(win.inputDevice, cur);
+    auto pic = new Picture(img);
     pic.size = UDim(Vector2f(1.0, 1.0));
-	layout.add(pic);
+    layout.add(pic);
     
     auto fpsc = new FPSCalc;
     
     GC.disable();
     
-	while (true) {
+    while (true) {
         GC.collect();
         
         fpsc.frame();
@@ -71,6 +73,6 @@ void main() {
         
         layout.draw(win.target);
         
-		win.update();
-	}
+        win.update();
+    }
 }

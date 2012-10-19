@@ -21,13 +21,16 @@ class Target : ContextCreated {
 	abstract {
 		/// Clears the render target.
 		void clear();
+        
+        /// Clears the depth only.
+        void clearDepth();
 		
 		@property {
 			/// Returns the size.
 			abstract Vector2ui size() const;
 		
 			/// Resizes the target.
-			abstract void size(in Vector2ui size);
+			abstract void size(ref const Vector2ui size);
 			
 			/// The texture used.
 			inout(Texture) texture() inout;

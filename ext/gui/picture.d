@@ -29,7 +29,7 @@ class Picture : Widget {
         
         // Create the used material and set texture.
 		_mat = new Material(Path("ext.gui.picture:mat"));
-		_mat.appendTexture(_img);
+		_mat.textures = _mat.textures ~ _img;
 	}
 	
 	@property nothrow pure {

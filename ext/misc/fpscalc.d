@@ -21,8 +21,7 @@ class FPSCalc {
         auto current = Clock.currTime();
         auto diff = current - _last;
         _last = current;
-        
-        _fps = 1000_000_000.0 / diff.total!"nsecs"();
+        _fps = 1_000_000_000.0 / diff.total!"nsecs"();
     }
     
     /**

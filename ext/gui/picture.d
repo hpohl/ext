@@ -54,7 +54,7 @@ class Picture : Widget {
             // If we don't have created the geometry for this context yet, create it.
 			if (target.context !in _geometries) {
 				auto geo = target.context.createGeometry();
-				geo.setToQuad(1.0, true);
+				geo.setToQuad(1.0, Geometry.GenTexCoords.yes);
 				_geometries[target.context] = geo;
 			}
 			

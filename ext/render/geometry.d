@@ -43,9 +43,14 @@ class Geometry : ContextCreated {
 	this(Context context) {
 		super(context);
 	}
+
+	/// Enum to specify whether texture coordinates should be generated or not.
+	enum GenTexCoords {
+		yes, no
+	}
 	
 	/// Resets the geometry to a quad.
-	void setToQuad(float size, bool texCoords) {
+	void setToQuad(float size, GenTexCoords genTexCoords = GenTexCoords.yes) {
 		Triangle[2] quad;
 		
 		auto halfSize = size / 2.0;
@@ -73,7 +78,7 @@ class Geometry : ContextCreated {
         
         vertices = quad;
 		
-		if (texCoords) {
+		if (genTexCoords == GenTexCoords.yes) {
             TriangleTexCoords[][] tcs;
             tcs.length = 1;
             tcs[0].length = 2;

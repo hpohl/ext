@@ -82,7 +82,7 @@ class Material : Resource {
     /**
      * Constructor to use.
      */
-    this(ref const Path path) {
+    this(Path path) {
         super(path);
     }
     

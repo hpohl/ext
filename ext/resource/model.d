@@ -13,7 +13,7 @@ import ext.resource.resource;
 class Model : Resource {
     mixin AutoRegister!(Model, 2);
     
-    this(ref const Path path) {
+    this(Path path) {
         super(path);
         _mat = new Material(Path(Location("_internal." ~ path.location.value), path.name ~ "_mat"));      
     }

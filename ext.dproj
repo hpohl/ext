@@ -6,19 +6,21 @@
     <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{11807333-FEF0-4086-8DB2-D925F8A35EF2}</ProjectGuid>
-    <UseDefaultCompiler>true</UseDefaultCompiler>
-    <IncrementalLinking>true</IncrementalLinking>
-    <PreferOneStepBuild>true</PreferOneStepBuild>
-    <Compiler>DMD</Compiler>
+    <UseDefaultCompiler>True</UseDefaultCompiler>
+    <IncrementalLinking>True</IncrementalLinking>
+    <PreferOneStepBuild>True</PreferOneStepBuild>
+    <Compiler>DMD2</Compiler>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
+    <DebugSymbols>True</DebugSymbols>
     <OutputPath>bin\Debug</OutputPath>
     <ObjectsDirectory>obj/Debug</ObjectsDirectory>
     <OutputName>ext</OutputName>
     <Target>Executable</Target>
-    <ExtraLinkerArguments>-L-ldl -L-lglut -L-lIL -L-lILU</ExtraLinkerArguments>
-    <ConsolePause>false</ConsolePause>
+    <ExtraLinkerArguments>-ldl -lglut</ExtraLinkerArguments>
+    <ConsolePause>False</ConsolePause>
+    <UnittestMode>False</UnittestMode>
+    <DebugLevel>0</DebugLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <OutputPath>bin\Release</OutputPath>
@@ -26,15 +28,19 @@
     <OutputName>ext</OutputName>
     <Target>Executable</Target>
     <ExtraLinkerArguments>-L-ldl -L-lglut -L-lIL -L-lILU</ExtraLinkerArguments>
+    <UnittestMode>False</UnittestMode>
+    <DebugLevel>0</DebugLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Unittest|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
+    <DebugSymbols>True</DebugSymbols>
     <OutputPath>bin\Unittest</OutputPath>
     <ExtraCompilerArguments>-unittest</ExtraCompilerArguments>
     <ObjectsDirectory>obj/Unittest</ObjectsDirectory>
     <Target>Executable</Target>
     <OutputName>ext</OutputName>
     <ExtraLinkerArguments>-L-ldl -L-lglut -L-lIL -L-lILU</ExtraLinkerArguments>
+    <UnittestMode>False</UnittestMode>
+    <DebugLevel>0</DebugLevel>
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="samples\" />

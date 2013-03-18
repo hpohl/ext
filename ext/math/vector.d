@@ -73,7 +73,7 @@ struct Vector(size_t n, T) {
     // -----------------------------------------------------...
     // Operators
     /// Assignment operator.
-    ref Vector opAssign(ref const Vector vec) nothrow pure {
+    ref Vector opAssign(Vector vec) nothrow pure {
         foreach(i; 0 .. n) {
             _data[i] = vec._data[i];
         }

@@ -133,7 +133,7 @@ struct Location {
 		_name = nameOf(_value);
 	}
 	
-	bool opEquals(ref const Location loc) {
+	bool opEquals(Location loc) {
 		return _value == loc._value;
 	}
 	
@@ -173,7 +173,7 @@ struct Location {
 struct Path {
 	static {
 		/// Returns true whether the path string is valid or false if not.
-		bool valid(string path) pure {
+		bool valid(string path) {
 			if (path.empty) {
 				return false;
 			}
@@ -206,7 +206,7 @@ struct Path {
 		}
 		
 		/// Validates the string, which should be a path.
-		void validate(string path) pure {
+		void validate(string path) {
 			if (!valid(path)) {
 				throw new ResourceException("Invalid path string detected.");
 			}
@@ -218,7 +218,7 @@ struct Path {
 		}
 		
 		/// Gets the name of the path string.
-		string nameOf(string path) pure {
+		string nameOf(string path) {
 			validate(path);
 			return find(path, ":")[1 .. $];
 		}
@@ -258,7 +258,7 @@ struct Path {
 	 * 
 	 * Yields to: location:name
 	 */
-	this(ref const Location loc, string name) {
+	this(Location loc, string name) {
 		if (name.empty) {
 			throw new ResourceException("Trying to create a path to a resource with
 				no name");

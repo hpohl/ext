@@ -35,7 +35,7 @@ interface Context {
 	Texture createTexture(Format format);
 	
 	/// Creates a render target.
-	Target createTarget(ref const Vector2ui size);
+	Target createTarget(Vector2ui size);
 	
 	/// Creates a geometry.
 	Geometry createGeometry();

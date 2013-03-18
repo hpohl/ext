@@ -94,7 +94,7 @@ class Context : ext.render.context.Context {
 			return new ext.render.opengl.texture.Texture(format, this);
 		}
 		
-		ext.render.opengl.target.Target createTarget(ref const Vector2ui size) {
+		ext.render.opengl.target.Target createTarget(Vector2ui size) {
 			return new ext.render.opengl.target.Target(this, size);
 		}
 		

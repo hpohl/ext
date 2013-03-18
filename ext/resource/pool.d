@@ -224,7 +224,7 @@ class Pool {
 	}
 	
 	/// Loads a resource from this pool.
-	R load(R = Resource)(ref const Path path) {
+	R load(R = Resource)(Path path) {
 		if (path.location.value !in _packages) {
 			auto pkg = new Package(_basePath, path.location);
 			_packages[path.location.value] = pkg;

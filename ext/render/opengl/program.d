@@ -67,14 +67,14 @@ class Program : ext.render.program.Program {
     }
     
     /// Sets the model view matrix.
-    void uniformModelViewMatrix(ref const Matrix4x4f mat) {
+    void uniformModelViewMatrix(Matrix4x4f mat) {
         auto loc = context.glGetUniformLocation(_prog, "mdlview".ptr);
         use();
         context.glUniformMatrix4fv(loc, 1, GL_TRUE, mat.ptr);
     }
     
     /// Sets the projection matrix.
-    void uniformProjectionMatrix(ref const Matrix4x4f mat) {
+    void uniformProjectionMatrix(Matrix4x4f mat) {
         auto loc = context.glGetUniformLocation(_prog, "proj".ptr);
         use();
         context.glUniformMatrix4fv(loc, 1, GL_TRUE, mat.ptr);

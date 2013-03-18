@@ -30,7 +30,7 @@ class Target : ContextCreated {
 			abstract Vector2ui size() const;
 		
 			/// Resizes the target.
-			abstract void size(ref const Vector2ui size);
+			abstract void size(Vector2ui size);
 			
 			/// The texture used.
 			inout(Texture) texture() inout;

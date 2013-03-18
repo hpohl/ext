@@ -15,7 +15,7 @@ mixin template AutoRegister(T, Resource.KeyType id) {
     import ext.resource.path;
     
 	private {
-		static Resource creator(ref const Path path) {
+		static Resource creator(Path path) {
 			return new T(path);
 		}
 		
@@ -37,7 +37,7 @@ class Resource {
 	
 	static {
 		/// Resource creator.
-		alias Resource function(ref const Path) Creator;
+		alias Resource function(Path) Creator;
 		
 		/// Registers resource type for serialization.
 		void register(Creator creator, KeyType id) {
@@ -63,7 +63,7 @@ class Resource {
 	 * 
 	 * "img.general:grass" should be in img/general -> grass item in package.
 	 */
-	this(ref const Path path) {
+	this(Path path) {
 		_path = path;
 	}
 	

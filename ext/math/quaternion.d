@@ -25,7 +25,7 @@ struct Quaternion(T) {
 	}
 
 	/// Sets x, y, and z to v and w to s (default 0).
-	this(ref const Vector!(3, T) v, T s = 0.0) {
+	this(Vector!(3, T) v, T s = 0.0) {
 		x = v.x;
 		y = v.y;
 		z = v.z;
@@ -41,7 +41,7 @@ struct Quaternion(T) {
 	///////////////////////////////////////////
 	// Operators
 	/// Assigns a three-dimensional vector to x, y and z. w = 0.
-	nothrow pure ref Quaternion opAssign(U)(ref const U v) {
+	nothrow pure ref Quaternion opAssign(U)(U v) {
 		static if (isVector!U) {
 			x = v.x;
 			y = v.y;

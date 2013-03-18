@@ -104,7 +104,7 @@ class Target : ext.render.target.Target {
 				return _size;
 			}
 			
-			void size(ref const Vector2ui size) {
+			void size(Vector2ui size) {
 				assert(false, "Not yet implemented.");
 			}
 			

@@ -68,7 +68,7 @@ class Texture : ext.render.texture.Texture {
 				return Vector2ui(w, h);
 			}
 			
-			void size(ref const Vector2ui size) {
+			void size(Vector2ui size) {
 				bind();
                 context.glTexStorage2D(GL_TEXTURE_2D, 1, toGLInternalFormat(format), size.x, size.y);
 			}

@@ -57,8 +57,18 @@ struct Matrix(size_t r, size_t c, T) {
     ///////////////////////////////////////////////////////
     // Operators
 
+	/// Matrix assignment.
+	ref Matrix opAssign(Matrix rhs) nothrow pure {
+		foreach (row; 0 .. r) {
+			foreach (col; 0 .. c) {
+				this[row][col] = rhs[row][col];
+			}
+		}
+		return this;
+	}
+
     /// Matrix multiplication.
-    Matrix opBinary(string op)(ref const Matrix rhs)
+    Matrix opBinary(string op)(Matrix rhs)
     if (op == "*") {
 
         Matrix result;
@@ -116,7 +126,7 @@ struct Matrix(size_t r, size_t c, T) {
     // Functions
 	
 	/// Translates the matrix given by the vector v.
-    void translate(ref const Vector!(r - 1, T) v) nothrow pure {
+    void translate(Vector!(r - 1, T) v) nothrow pure {
         foreach (row; 0 .. r - 1) {
             this[row][c - 1] += v[row];
         }
@@ -124,7 +134,7 @@ struct Matrix(size_t r, size_t c, T) {
     
     static if (r == c) {
         /// Scales the matrix.
-        void scale(ref const Vector!(r - 1, T) v) nothrow pure {
+        void scale(Vector!(r - 1, T) v) nothrow pure {
             Matrix m;
             identity(m);
             foreach (row; 0 .. r - 1) {

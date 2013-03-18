@@ -45,7 +45,7 @@ class Image : Resource {
     mixin AutoRegister!(Image, resourceKey);
     
     /// Constructor to use.
-    this(ref const Path path) {
+    this(Path path) {
         super(path);
     }
     
@@ -85,8 +85,7 @@ class Image : Resource {
         }
         
         if (header[0].type != 2) {
-            assert(false);
-            throw new ResourceException("Unsupported TGA format.");
+			throw new ResourceException("Unsupported TGA format.");
         }
         
         if (header[0].bpp != 24 && header[0].bpp != 32) {

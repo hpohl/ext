@@ -25,22 +25,22 @@ class Layout {
 	 */
 	this(InputDevice inputDevice, Image mousePointer) {
 		_inputDevice = inputDevice;
-        _mousePointer = new Picture(mousePointer);
-        _mousePointer.size = UDim(Vector2f(0.0, 0.0), Vector2i(48, 48));
+		_mousePointer = new Picture(mousePointer);
+		_mousePointer.size = UDim(Vector2f(0.0, 0.0), Vector2i(48, 48));
 	}
 	
 	/// Draws all widgets of the layout to the target.
 	void draw(Target target) {
 		foreach (wid; _widgets) {
 			wid.draw(target);
-            target.clearDepth();
+			target.clearDepth();
 		}
-        
-        // Update mouse position & draw cursor.
-        auto rel = Vector2f(0.0, 0.0);
-        auto abs = cast(Vector2i)_inputDevice.mousePosition;
-        _mousePointer.pos = UDim(rel, abs);
-        _mousePointer.draw(target);
+		
+		// Update mouse position & draw cursor.
+		auto rel = Vector2f(0.0, 0.0);
+		auto abs = cast(Vector2i)_inputDevice.mousePosition;
+		_mousePointer.pos = UDim(rel, abs);
+		_mousePointer.draw(target);
 	}
 	
 	@property {
@@ -67,17 +67,17 @@ class Layout {
 			inout(Widget)[] widgets() inout {
 				return _widgets;
 			}
-            
-            /// Return the picture of the mouse pointer.
-            inout(Picture) mousePointer() inout {
-                return _mousePointer;
-            }
+			
+			/// Return the picture of the mouse pointer.
+			inout(Picture) mousePointer() inout {
+				return _mousePointer;
+			}
 		}
 	}
 	
 	private {
 		InputDevice _inputDevice;
 		Widget[] _widgets;
-        Picture _mousePointer;
+		Picture _mousePointer;
 	}	
 }

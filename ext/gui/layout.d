@@ -26,7 +26,7 @@ class Layout {
 	this(InputDevice inputDevice, Image mousePointer) {
 		_inputDevice = inputDevice;
 		_mousePointer = new Picture(mousePointer);
-		_mousePointer.size = UDim(Vector2f(0.0, 0.0), Vector2i(48, 48));
+		_mousePointer.size = UDim(Vector2f(0.0, 0.0), Vector2i(32, 32));
 	}
 	
 	/// Draws all widgets of the layout to the target.
@@ -56,7 +56,7 @@ class Layout {
 		void remove(Widget widget) {
 			auto idx = countUntil(_widgets, widget);
 			if (idx != -1) {
-				std.algorithm.remove(_widgets, idx);
+				_widgets = _widgets.remove(idx);
 			} else {
 				throw new GUIException("Widget cannot be removed: It does not exist.");
 			}

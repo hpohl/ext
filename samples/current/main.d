@@ -33,6 +33,10 @@ void createResources() {
     auto img = new Image(Path("fun:tux"));
     img.loadFromFile("images/tux.tga");
     pool.save(img);
+
+    img = new Image(Path("ext:logo"));
+    img.loadFromFile("images/logo.tga");
+    pool.save(img);
     
     auto mat = new Material(Path("material:general"));
     mat.ambient = Color(0.0, 0.0, 0.0, 1.0);
@@ -51,14 +55,16 @@ void main() {
     auto pool = new Pool("packages");
     auto mat = pool.load!Material(Path("material:general"));
     auto img = pool.load!Image(Path("fun:tux"));
+    auto logo = pool.load!Image(Path("ext:logo"));
     auto cur = pool.load!Image(Path("cursors:pointer"));
     
     ////////////////////////////////////////
     auto win = new Window;
     
     auto layout = new Layout(win.inputDevice, cur);
-    auto pic = new Picture(img);
-    pic.size = UDim(Vector2f(1.0, 1.0));
+    auto pic = new Picture(logo);
+    pic.pos = UDim(Vector2f(0.9, 0.9));
+    pic.size = UDim(Vector2f(0.1, 0.1));
     layout.add(pic);
     
     auto fpsc = new FPSCalc;
@@ -66,13 +72,12 @@ void main() {
     GC.disable();
     
     while (true) {
-        GC.collect();
-        
         fpsc.frame();
         win.target.clear();
         
         layout.draw(win.target);
         
         win.update();
+        GC.collect();
     }
 }

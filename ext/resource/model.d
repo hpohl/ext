@@ -52,7 +52,7 @@ class Model : Resource {
             auto mat = cast(Material)depencies[0];
             
             if (!mat) {
-                throw new ResourceException("Unable to load model from raw data: Depency is not a mater");
+                throw new ResourceException("Unable to load model from raw data: Depency is not a material.");
             }
             
             _mat = mat;
@@ -81,7 +81,26 @@ class Model : Resource {
         }
         
         void[] saveToRaw() const {
-            return [];
+			// Write vertices.
+			void[] verts;
+			verts.length = ulong.sizeof;
+			*cast(ulong*)verts.ptr = _vertices.length;
+			verts ~= _vertices.dup;
+
+			// Write tex coords.
+			void[] texcs;
+			texcs.length = ulong.sizeof;
+			*cast(ulong*)texcs.ptr = _texCoords.length;
+
+			foreach (tcs; _texCoords) {
+				void[] data;
+				data.length = ulong.sizeof;
+                *cast(ulong*)data.ptr = tcs.length;
+                data ~= tcs.dup;
+                texcs ~= data;
+			}
+
+			return verts ~ texcs;
         }
     }
     

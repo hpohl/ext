@@ -85,7 +85,7 @@ class Image : Resource {
         }
         
         if (header[0].type != 2) {
-			throw new ResourceException("Unsupported TGA format.");
+			throw new ResourceException("TGA files may not be compressed.");
         }
         
         if (header[0].bpp != 24 && header[0].bpp != 32) {

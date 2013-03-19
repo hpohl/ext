@@ -45,7 +45,7 @@ class Resource {
 		}
 		
 		/// Create a reasource from id and path.
-		Resource create(KeyType id, in Path path) {
+		Resource create(KeyType id, Path path) {
 			return _creators[id](path);
 		}
 		

@@ -86,7 +86,7 @@ class Geometry : ext.render.geometry.Geometry {
 				// Update VBO.
 				bindVBO();
 				context.glBufferData(GL_ARRAY_BUFFER, Triangle.sizeof * _vertices.length,
-				                     _vertices.ptr, GL_STATIC_DRAW);
+                                     _vertices.ptr, GL_STATIC_DRAW);
 			}
 			
 			inout(TriangleTexCoords)[][] texCoords() inout {
@@ -129,7 +129,7 @@ class Geometry : ext.render.geometry.Geometry {
 	
 	override {
 		void draw(ext.render.target.Target target, const ext.render.program.Program prog,
-		          in Matrix4x4f modelview, in Matrix4x4f projection) {
+		          Matrix4x4f modelview, Matrix4x4f projection) {
 			
 			// Make sure we got an OpenGL program.
 			auto oglprog = cast(ext.render.opengl.program.Program)prog;

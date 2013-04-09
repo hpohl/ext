@@ -9,7 +9,7 @@
     <UseDefaultCompiler>True</UseDefaultCompiler>
     <IncrementalLinking>True</IncrementalLinking>
     <PreferOneStepBuild>True</PreferOneStepBuild>
-    <Compiler>GDC</Compiler>
+    <Compiler>DMD2</Compiler>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -17,17 +17,17 @@
     <ObjectsDirectory>obj/Debug</ObjectsDirectory>
     <OutputName>ext</OutputName>
     <Target>Executable</Target>
-    <ExtraLinkerArguments>-ldl -lglut</ExtraLinkerArguments>
     <ConsolePause>False</ConsolePause>
     <UnittestMode>False</UnittestMode>
     <DebugLevel>0</DebugLevel>
+    <ExtraLinkerArguments>-ldl -lglut</ExtraLinkerArguments>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <OutputPath>bin\Release</OutputPath>
     <ObjectsDirectory>obj/Release</ObjectsDirectory>
     <OutputName>ext</OutputName>
     <Target>Executable</Target>
-    <ExtraLinkerArguments>-L-ldl -L-lglut -L-lIL -L-lILU</ExtraLinkerArguments>
+    <ExtraLinkerArguments>-ldl -lglut</ExtraLinkerArguments>
     <UnittestMode>False</UnittestMode>
     <DebugLevel>0</DebugLevel>
   </PropertyGroup>

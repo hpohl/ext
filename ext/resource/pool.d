@@ -35,8 +35,8 @@ class Package {
 	 */
 	void add(Resource res) {
 		if (res.path.location != _loc) {
-			throw new ResourceException("Cannot add resource " ~ res.path.name ~
-				": Unequal locations. Package has " ~ _loc.value ~
+			throw new ResourceException("Cannot add resource \"" ~ res.path.name ~
+				"\": Unequal locations. Package has " ~ _loc.value ~
 				", resource has " ~ res.path.location.value ~ ".");
 		}
 		
@@ -48,15 +48,15 @@ class Package {
 	 */
 	R get(R = Resource)(string name) {
 		if (name !in _resources) {
-			throw new ResourceException("Resource " ~ name ~
-				" not found in package " ~ _loc.value ~ ".");
+			throw new ResourceException("Resource \"" ~ name ~
+				"\" not found in package \"" ~ _loc.value ~ "\".");
 		}
 		
 		auto ret = cast(R)_resources[name];
 		
 		if (!ret) {
-			throw new ResourceException("Resource " ~ name ~ " in package " ~
-				_loc.value ~ " has different type.");
+			throw new ResourceException("Resource \"" ~ name ~ "\" in package \"" ~
+				_loc.value ~ "\" has different type.");
 		}
 		
 		return ret;

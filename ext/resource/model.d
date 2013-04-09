@@ -15,7 +15,7 @@ class Model : Resource {
     
     this(Path path) {
         super(path);
-        _mat = new Material(Path(Location("_internal." ~ path.location.value), path.name ~ "_mat"));      
+        _mat = new Material(Path(Location("ext.model." ~ path.location.value), path.name ~ "_defaultmaterial"));      
     }
     
     /**
@@ -23,18 +23,34 @@ class Model : Resource {
      */
     Geometry genGeometry(Context con) const {
         auto geo = con.createGeometry();
+        geo.vertices = _vertices.dup;
+        TriangleTexCoords[][] dTexCoords;
+        foreach (tcs; _texCoords) {
+            dTexCoords ~= tcs.dup;
+        }
+        geo.texCoords = dTexCoords;
         return geo;
     }
     
     @property nothrow pure {
         /// Returns the used material.
-        inout(Material) material() inout {
+        inout(Material) material() inout nothrow pure {
             return _mat;
         }
         
         /// Sets the material.
-        void material(Material mat) {
+        void material(Material mat) nothrow pure {
             _mat = mat;
+        }
+
+        /// Returns the triangles of this model.
+        inout(Triangle)[] vertices() inout nothrow pure {
+            return _vertices;
+        }
+
+        /// Sets the triangles of this model.
+        void vertices(Triangle[] vertices) nothrow pure {
+            _vertices = vertices;
         }
     }
     

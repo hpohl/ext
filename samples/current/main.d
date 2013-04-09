@@ -1,5 +1,7 @@
 module samples.current.main;
 
+import std.conv;
+
 import core.memory;
 
 import std.algorithm;
@@ -11,11 +13,13 @@ import ext.gui.picture;
 import ext.gui.udim;
 import ext.math.vector;
 import ext.misc.fpscalc;
+import ext.render.geometry;
 import ext.render.opengl.api;
 import ext.render.opengl.context;
 import ext.render.opengl.exception;
 import ext.resource.image;
 import ext.resource.material;
+import ext.resource.model;
 import ext.resource.path;
 import ext.resource.pool;
 import ext.resource.resource;
@@ -43,6 +47,15 @@ void createResources() {
     mat.diffuse = Color(1.0, 0.0, 0.0, 1.0);
     mat.specular = Color(0.0, 0.0, 0.0, 1.0);
     mat.textures = mat.textures ~ img;
+
+    auto mdl = new Model(Path("models:triangle"));
+    auto tri = Triangle();
+    tri.a = Vector3f(0.0, -1.0, 0.0);
+    tri.b = Vector3f(1.0, 1.0, 0.0);
+    tri.c = Vector3f(-1.0, 1.0, 0.0);
+    mdl.vertices = [tri];
+    mdl.material = mat;
+    pool.save(mdl);
     
     pool.save(mat);
     
@@ -57,6 +70,7 @@ void main() {
     auto img = pool.load!Image(Path("fun:tux"));
     auto logo = pool.load!Image(Path("ext:logo"));
     auto cur = pool.load!Image(Path("cursors:pointer"));
+    auto mdl = pool.load!Model(Path("models:triangle"));
     
     ////////////////////////////////////////
     auto win = new Window;

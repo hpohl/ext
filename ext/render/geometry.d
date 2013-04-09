@@ -101,7 +101,7 @@ class Geometry : ContextCreated {
 		 * and projection matrix.
 		 */
 		void draw(Target target, const Program prog,
-			in Matrix4x4f modelview, in Matrix4x4f projection);
+                  Matrix4x4f modelview, Matrix4x4f projection);
 		
 		@property {
 			/// Returns the vertices as triangles.

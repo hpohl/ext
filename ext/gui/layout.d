@@ -54,6 +54,7 @@ class Layout {
 		
 		/// Remove a widget.
 		void remove(Widget widget) {
+            _widgets = _widgets.remove!(w => w is widget)();
 			auto idx = countUntil(_widgets, widget);
 			if (idx != -1) {
 				_widgets = _widgets.remove(idx);

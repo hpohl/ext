@@ -1,5 +1,7 @@
 module ext.render.context;
 
+import std.c.stdlib;
+
 import ext.math.vector;
 import ext.render.geometry;
 import ext.render.program;
@@ -29,8 +31,7 @@ class ContextCreated {
  * A render context, which is implemented by used render systems,
  * e.g. by OpenGL, OpenRL or Direct3D.
  */
-interface Context {
-	
+abstract class Context {
 	/// Creates a texture using this context.
 	Texture createTexture(Format format);
 	
@@ -41,5 +42,5 @@ interface Context {
 	Geometry createGeometry();
 	
 	/// Creates a program.
-	Program createProgram(const Material mat); 
+	Program createProgram(const Material mat);
 }

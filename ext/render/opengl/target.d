@@ -77,7 +77,7 @@ class Target : ext.render.target.Target {
 			return _fbo;
 		}
 		
-        // The texture to draw to.
+        /// The texture to draw to.
 		ext.render.opengl.texture.Texture colorAttachment() {
 			return _colorAttachment;
 		}

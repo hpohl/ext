@@ -29,6 +29,7 @@ class Geometry : ext.render.geometry.Geometry {
 	/// Creates a geometry and specifies the context used.
 	this(Context context) {
 		super(context);
+        _ctx = context.handle;
 		
 		// Generate VAO.
 		context.glGenVertexArrays(1, &_vao);
@@ -45,12 +46,8 @@ class Geometry : ext.render.geometry.Geometry {
 			context.glDeleteVertexArrays(1, &_vao);
 			context.glDeleteBuffers(1, &_vbo);
 			
-			// Wow, this OpenGL feature is usefule one time.
-			//context.glDeleteBuffers(cast(GLsizei)_tvbos.length, _tvbos.ptr);
-			
-			// Not anymore...
 			foreach (tc; _texCoords) {
-				context.glDeleteBuffers(1, &tc[1]);
+				context.glDeleteBuffers(1, &tc.name);
 			}
 		}
 	}
@@ -70,7 +67,7 @@ class Geometry : ext.render.geometry.Geometry {
 		GLuint[] tvbos() nothrow pure {
 			GLuint[] ret;
 			foreach (tc; _texCoords) {
-				ret ~= tc[1];
+				ret ~= tc.name;
 			}
 			return ret;
 		}
@@ -100,8 +97,8 @@ class Geometry : ext.render.geometry.Geometry {
 					_texCoords.length = texCoords.length;
 					
 					foreach (i, ref tc; _texCoords[diff - 1 .. $]) {
-						_texCoords[diff - 1 + i][0] = texCoords[diff - 1 + i];
-						context.glGenBuffers(1, &tc[1]);
+						_texCoords[diff - 1 + i].tcs = texCoords[diff - 1 + i];
+						context.glGenBuffers(1, &tc.name);
 					}
 				}
 				
@@ -111,7 +108,7 @@ class Geometry : ext.render.geometry.Geometry {
 						auto diff = _texCoords.length - texCoords.length;
 						
 						foreach (ref tc; _texCoords[diff - 1 .. $]) {
-							context.glDeleteBuffers(1, &tc[1]);
+							context.glDeleteBuffers(1, &tc.name);
 						}
 					}
 				}
@@ -119,9 +116,9 @@ class Geometry : ext.render.geometry.Geometry {
 				// Foreach tex coord dimension.
 				foreach (i, tc; _texCoords) {
 					// Copy tex coords to VBO.
-					context.glBindBuffer(GL_ARRAY_BUFFER, tc[1]);
-					context.glBufferData(GL_ARRAY_BUFFER, TriangleTexCoords.sizeof * tc[0].length,
-					                     tc[0].ptr, GL_STATIC_DRAW);
+					context.glBindBuffer(GL_ARRAY_BUFFER, tc.name);
+					context.glBufferData(GL_ARRAY_BUFFER, TriangleTexCoords.sizeof * tc.tcs.length,
+					                     tc.tcs.ptr, GL_STATIC_DRAW);
 				}
 			}
 		}
@@ -168,11 +165,11 @@ class Geometry : ext.render.geometry.Geometry {
 			
 			// Update texture buffers.
 			foreach (i, tc; _texCoords) {
-				if (smallest > tc.length) {
-					smallest = tc.length;
+				if (smallest > tc.tcs.length) {
+					smallest = tc.tcs.length;
 				}
 				
-				context.glBindBuffer(GL_ARRAY_BUFFER, tc[1]);
+				context.glBindBuffer(GL_ARRAY_BUFFER, tc.name);
 				context.glVertexAttribPointer(
 					cast(uint)ext.render.opengl.program.Program.texLocations[i],
 					2, GL_FLOAT, GL_FALSE, 0, null);
@@ -191,7 +188,12 @@ class Geometry : ext.render.geometry.Geometry {
 		
 		Triangle[] _vertices;
 		
-		Tuple!(TriangleTexCoords[], GLuint)[] _texCoords;
+        struct TexCoordsVBO {
+            TriangleTexCoords[] tcs;
+            GLuint name;
+        }
+
+		TexCoordsVBO[] _texCoords;
 		
 		/// Bind the VAO.
 		void bindVAO() const {

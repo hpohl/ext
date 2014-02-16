@@ -130,7 +130,11 @@ class Program : ext.render.program.Program {
         
         @property {
             inout(ext.render.texture.Texture)[] textures() inout {
-                return _textures;
+                inout(ext.render.texture.Texture)[] ret;
+                foreach (t; _textures) {
+                    ret ~= t;
+                }
+                return ret;
             }
             
             void textures(ext.render.texture.Texture[] textures) {

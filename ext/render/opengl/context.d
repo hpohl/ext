@@ -2,6 +2,7 @@ module ext.render.opengl.context;
 
 import std.exception;
 import std.stdio;
+import std.typecons;
 
 import ext.math.vector;
 import ext.misc.dynlib;
@@ -21,6 +22,8 @@ import ext.resource.material;
  * Used by OpenGL context created objects.
  */
 mixin template OpenGLObject() {
+    import std.typecons : RefCounted;
+
 	/// Automatically cast to an OpenGL context.
 	override inout(Context) context() inout nothrow pure {
 		return cast(inout(Context))super.context;
@@ -30,6 +33,32 @@ mixin template OpenGLObject() {
 	void throwOnGLError(string msg = "", string file = __FILE__, size_t line = __LINE__, Throwable next = null) const {
 		ext.render.opengl.exception.throwOnGLError(context, msg, file, line, next);
 	}
+
+    /// Used to call OpenGL functions without checks.
+    auto opDispatch(string name, Args...)(Args args) const nothrow
+    if (name.length > 9 && name[0 .. 9] == "nocheckgl") {
+        mixin("return _ctx.funcs.gl" ~ name[9 .. $] ~ "(args);");
+    }
+    
+    /**
+     * Used to call OpenGL functions and automatically throw on error.
+     */
+    auto opDispatch(string name, Args...)(Args args) const
+    if (name.length > 2 && name[0 .. 2] == "gl") {
+        scope (exit) throwOnGLError(this, name[0 .. $]);
+        version (NoOpenGLChecks) {
+            // Do not check.
+        } else {
+            mixin("return _ctx.funcs." ~ name[0 .. $] ~ "(args);");
+        }
+    }
+
+    private RefCounted!ContextHandle _ctx;
+}
+
+package struct ContextHandle {
+    DynLib lib;
+    Functions* funcs;
 }
 
 /**
@@ -45,10 +74,9 @@ class Context : ext.render.context.Context {
 		
 		// For each function name...
 		foreach (func; funcs) {
-			
 			/// ...load it.
-			auto load = "_functions." ~ func ~
-					  " = cast(typeof(_functions." ~ func ~ "))_lib.loadSymbol(\"" ~ func ~ "\")";
+			auto load = "_handle.funcs." ~ func ~
+					  " = cast(typeof(_handle.funcs." ~ func ~ "))_handle.lib.loadSymbol(\"" ~ func ~ "\")";
 			result ~= "collectException(" ~ load ~ ");";
 		}
 
@@ -57,36 +85,25 @@ class Context : ext.render.context.Context {
 	
 	/// Loads all OpenGL functions using the file name of the dll.
 	this(string dllFileName) {
+        _handle = RefCounted!ContextHandle();
+        _handle.funcs = new Functions;
+
 		// Loads the OpenGL dll.
-		_lib = new DynLib(dllFileName);
+		_handle.lib = new DynLib(dllFileName);
 		
 		// Load OpenGL functions.
-		mixin(generateFuncLoader);
+		mixin (generateFuncLoader);
 		
 		// Enables.
         this.glEnable(GL_BLEND);
         this.glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		this.glEnable(GL_DEPTH_TEST);
 	}
-	
-	/// Used to call OpenGL functions without checks.
-	auto opDispatch(string name, Args...)(Args args) const
-    if (name.length > 9 && name[0 .. 9] == "nocheckgl") {
-    	mixin("return _functions.gl" ~ name[9 .. $] ~ "(args);");
+
+    ~this() {
+        writeln("context dtor");
+        stdout.flush();
     }
-	
-	/**
-	 * Used to call OpenGL functions and automatically throw on error.
-	 */
-	auto opDispatch(string name, Args...)(Args args) const
-	if (name.length > 2 && name[0 .. 2] == "gl") {
-		scope(exit) throwOnGLError(this, name[0 .. $]);
-		version(NoOpenGLChecks) {
-			// Do not check.
-		} else {
-			mixin("return _functions." ~ name[0 .. $] ~ "(args);");
-		}
-	} 
 	
 	// Implementations of base.
 	override {
@@ -106,9 +123,12 @@ class Context : ext.render.context.Context {
 			return new ext.render.opengl.program.Program(this, mat);
 		}
 	}
+
+    package @property RefCounted!ContextHandle handle() nothrow {
+        return _handle;
+    }
 	
 	private {
-		DynLib _lib;
-		Functions _functions;
+        RefCounted!ContextHandle _handle;
 	}
 }

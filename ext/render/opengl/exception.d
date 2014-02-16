@@ -30,7 +30,8 @@ string errorToString(GLenum error) {
  * Every exception thrown by the OpenGL module is derived from this class.
  */
 class OpenGLException : RenderException {
-	this(string msg, string file = __FILE__, size_t line = __LINE__, Throwable next = null) {
+	this(string msg, string file = __FILE__, size_t line = __LINE__,
+         Throwable next = null) nothrow pure {
 		super(msg, file, line, next);
 	}
 }
@@ -39,7 +40,8 @@ class OpenGLException : RenderException {
  * Used if there occured an OpenGL error.
  */
 class OpenGLErrorException : OpenGLException {
-	this(GLenum error, string msg, string file = __FILE__, size_t line = __LINE__, Throwable next = null) {
+	this(GLenum error, string msg, string file = __FILE__,
+         size_t line = __LINE__, Throwable next = null) nothrow pure {
 		super(msg, file, line, next);
 		this.error = error;
 	}
@@ -51,10 +53,13 @@ class OpenGLErrorException : OpenGLException {
 /**
  * Throws if an OpenGL error occured.
  */
-void throwOnGLError(const Context ctx, string msg = "",
-					string file = __FILE__, size_t line = __LINE__, Throwable next = null) {
-	auto err = ctx.nocheckglGetError();
+void throwOnGLError(const Context ctx, string msg = "", string file = __FILE__,
+                    size_t line = __LINE__, Throwable next = null) nothrow {
+    GLenum err;
+    try {
+	    err = ctx.nocheckglGetError();
+    } catch (Exception) { }
 	if (err != GL_NO_ERROR) {
-		throw new OpenGLErrorException(err, msg ~ ", " ~ errorToString(err), file, line, next);
+		//throw new OpenGLErrorException(err, msg ~ ", " ~ errorToString(err), file, line, next);
 	}
 }

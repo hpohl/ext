@@ -13,7 +13,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
-    <OutputPath>bin\Debug</OutputPath>
+    <OutputPath>bin</OutputPath>
     <ObjectsDirectory>obj/Debug</ObjectsDirectory>
     <OutputName>ext</OutputName>
     <Target>Executable</Target>
@@ -23,7 +23,7 @@
     <ExtraLinkerArguments>-ldl -lglut</ExtraLinkerArguments>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <OutputPath>bin\Release</OutputPath>
+    <OutputPath>bin</OutputPath>
     <ObjectsDirectory>obj/Release</ObjectsDirectory>
     <OutputName>ext</OutputName>
     <Target>Executable</Target>
@@ -33,7 +33,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Unittest|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
-    <OutputPath>bin\Unittest</OutputPath>
+    <OutputPath>bin</OutputPath>
     <ExtraCompilerArguments>-unittest</ExtraCompilerArguments>
     <ObjectsDirectory>obj/Unittest</ObjectsDirectory>
     <Target>Executable</Target>

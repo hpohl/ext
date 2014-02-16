@@ -63,35 +63,40 @@ void createResources() {
 }
 
 void main() {
-    createResources();
-    
-    auto pool = new Pool("packages");
-    auto mat = pool.load!Material(Path("material:general"));
-    auto img = pool.load!Image(Path("fun:tux"));
-    auto logo = pool.load!Image(Path("ext:logo"));
-    auto cur = pool.load!Image(Path("cursors:pointer"));
-    auto mdl = pool.load!Model(Path("models:triangle"));
-    
-    ////////////////////////////////////////
     auto win = new Window;
-    
-    auto layout = new Layout(win.inputDevice, cur);
-    auto pic = new Picture(logo);
-    pic.pos = UDim(Vector2f(0.9, 0.9));
-    pic.size = UDim(Vector2f(0.1, 0.1));
-    layout.add(pic);
-    
-    auto fpsc = new FPSCalc;
-    
-    GC.disable();
-    
-    while (true) {
-        fpsc.frame();
-        win.target.clear();
+    createResources();
+
+    {
+        auto pool = new Pool("packages");
+        auto mat = pool.load!Material(Path("material:general"));
+        auto img = pool.load!Image(Path("fun:tux"));
+        auto logo = pool.load!Image(Path("ext:logo"));
+        auto cur = pool.load!Image(Path("cursors:pointer"));
+        auto mdl = pool.load!Model(Path("models:triangle"));
         
-        layout.draw(win.target);
+        ////////////////////////////////////////
+        auto layout = new Layout(win.inputDevice, cur);
+        auto pic = new Picture(logo);
+        pic.pos = UDim(Vector2f(0.9, 0.9));
+        pic.size = UDim(Vector2f(0.1, 0.1));
+        layout.add(pic);
         
-        win.update();
+        auto fpsc = new FPSCalc;
+        
+        GC.disable();
+        
+        while (!win.inputDevice.isPressed(Key.e)) {
+            fpsc.frame();
+            win.target.clear();
+            
+            layout.draw(win.target);
+            
+            win.update();
+            GC.collect();
+        }
+
         GC.collect();
     }
+
+    GC.collect();
 }

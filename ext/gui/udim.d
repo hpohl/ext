@@ -17,6 +17,7 @@ struct UDim {
 		_abs = abs;
 	}
 
+    /// Default assignment operator.
 	ref UDim opAssign(UDim rhs) nothrow pure {
 		_rel = rhs._rel;
 		_abs = rhs._abs;
